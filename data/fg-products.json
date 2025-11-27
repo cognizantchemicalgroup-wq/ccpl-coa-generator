@@ -1,0 +1,1285 @@
+{
+  "products": [
+    {
+      "code": "F2504001",
+      "name": "Acetone EP/BP",
+      "productName": "Acetone - Meets EP/BP Chemical Specifications",
+      "category": "finish-goods",
+      "standard": "EP/BP",
+      "tests": [
+        {
+          "test": "Appearance",
+          "specification": "Volatile, clear, colourless liquid",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water and ethanol (96 percent)",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification A (By Relative density)",
+          "specification": "0.790-0.793",
+          "type": "numeric",
+          "range": { "min": 0.790, "max": 0.793 },
+          "unit": ""
+        },
+        {
+          "test": "Identification B (By Chemical test)",
+          "specification": "An intense red colour is produced which becomes violet with the addition of 3.5 mL of acetic acid R.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification C (By chemical test)",
+          "specification": "A greenish-blue colour is produced",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Appearance of Solution",
+          "specification": "The solution is cleat and colorless",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity or Alkalinity",
+          "specification": "The solution is red or orange",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Density (g/mL)at 20 ° C",
+          "specification": "0.790-0.793",
+          "type": "numeric",
+          "range": { "min": 0.790, "max": 0.793 },
+          "unit": "g/mL"
+        },
+        {
+          "test": "Related Substances - Impurity A",
+          "specification": "Not more than 0.05 %",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Impurity B",
+          "specification": "Not more than 0.05 %",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Impurity C",
+          "specification": "Not more than 2 ppm",
+          "type": "numeric",
+          "range": { "max": 2 },
+          "unit": "ppm",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Any other impurity",
+          "specification": "Not more than 0.05 %",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Matter Insoluble in Water",
+          "specification": "The solution is clear",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Reducing Substances",
+          "specification": "The mixture is not completely decolourised.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Residue on Evaporation",
+          "specification": "Maximum 50 ppm",
+          "type": "numeric",
+          "range": { "max": 50 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Water (H2O), g/L",
+          "specification": "Maximum 3 g/L",
+          "type": "numeric",
+          "range": { "max": 3 },
+          "unit": "g/L"
+        }
+      ]
+    },
+    {
+      "code": "F2504001M",
+      "name": "Acetone Multi",
+      "productName": "Acetone - Meets NF and EP/BP Specifications",
+      "category": "finish-goods",
+      "standard": "NF/EP/BP",
+      "tests": [
+        {
+          "test": "Meets NF Requirements",
+          "specification": "",
+          "type": "header"
+        },
+        {
+          "test": "Description",
+          "specification": "Transparent, colorless, mobile, Volatile liquid having a characteristic odor.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water, with alcohol, with ether, with chloroform and with most volatile oils.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification A (By IR)",
+          "specification": "The IR absorption spectrum of the standard should match with that of IR absorption spectrum of sample.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification B (By GC)",
+          "specification": "The retention time of the major peak in the chromatograph of the sample corresponds to that in the chromatograph of USP Acetone RS as obtained in the test for Assay",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Specific Gravity at 25 ° C",
+          "specification": "Not more than 0.789",
+          "type": "numeric",
+          "range": { "max": 0.789 },
+          "unit": ""
+        },
+        {
+          "test": "Nonvolatile Residue",
+          "specification": "The weight of the residue does not exceed 2mg (0.004 %)",
+          "type": "numeric",
+          "range": { "max": 0.004 },
+          "unit": "%"
+        },
+        {
+          "test": "Readily Oxidizable Substances",
+          "specification": "The permanganate color of the mixture does not completely disappear within 15mins",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Water (H2O)",
+          "specification": "Not more than 0.5 %",
+          "type": "numeric",
+          "range": { "max": 0.5 },
+          "unit": "%"
+        },
+        {
+          "test": "Assay (as (CH3)2CO)(calc on anhydrous basis)",
+          "specification": "NLT 99.0 %",
+          "type": "numeric",
+          "range": { "min": 99.0 },
+          "unit": "%"
+        },
+        {
+          "test": "Benzene",
+          "specification": "Not more than.2 ppm",
+          "type": "numeric",
+          "range": { "max": 2 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Meets EP/BP Chemical Specifications",
+          "specification": "",
+          "type": "header"
+        },
+        {
+          "test": "Appearance",
+          "specification": "Volatile, clear, colourless liquid",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water and ethanol (96 percent)",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification A (By Relative density)",
+          "specification": "0.790-0.793",
+          "type": "numeric",
+          "range": { "min": 0.790, "max": 0.793 },
+          "unit": ""
+        },
+        {
+          "test": "Identification B (By Chemical test)",
+          "specification": "An intense red colour is produced which becomes violet with the addition of 3.5 mL of acetic acid R.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification C (By chemical test)",
+          "specification": "A greenish-blue colour is produced",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Appearance of Solution",
+          "specification": "The solution is cleat and colorless",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity or Alkalinity",
+          "specification": "The solution is red or orange",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Density (g/mL)at 20 ° C",
+          "specification": "0.790-0.793",
+          "type": "numeric",
+          "range": { "min": 0.790, "max": 0.793 },
+          "unit": "g/mL"
+        },
+        {
+          "test": "Related Substances - Impurity A",
+          "specification": "Not more than 0.05 %",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Impurity B",
+          "specification": "Not more than 0.05 %",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Impurity C",
+          "specification": "Not more than 2 ppm",
+          "type": "numeric",
+          "range": { "max": 2 },
+          "unit": "ppm",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Any other impurity",
+          "specification": "Not more than 0.05 %",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Matter Insoluble in Water",
+          "specification": "The solution is clear",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Reducing Substances",
+          "specification": "The mixture is not completely decolourised.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Residue on Evaporation",
+          "specification": "Maximum 50 ppm",
+          "type": "numeric",
+          "range": { "max": 50 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Water (H2O), g/L",
+          "specification": "Maximum 3 g/L",
+          "type": "numeric",
+          "range": { "max": 3 },
+          "unit": "g/L"
+        }
+      ]
+    },
+    {
+      "code": "F2508003",
+      "name": "Acetone NF",
+      "productName": "Acetone - Meets NF Requirements",
+      "category": "finish-goods",
+      "standard": "NF",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "Transparent, colorless, mobile, Volatile liquid having a characteristic odor.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water, with alcohol, with ether, with chloroform and with most volatile oils.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification A (By IR)",
+          "specification": "The IR absorption spectrum of the standard should match with that of IR absorption spectrum of sample.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification B (By GC)",
+          "specification": "The retention time of the major peak in the chromatograph of the sample corresponds to that in the chromatograph of USP Acetone RS as obtained in the test for Assay",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Specific Gravity at 25 ° C",
+          "specification": "Not more than 0.789",
+          "type": "numeric",
+          "range": { "max": 0.789 },
+          "unit": ""
+        },
+        {
+          "test": "Nonvolatile Residue",
+          "specification": "The weight of the residue does not exceed 2mg (0.004 %)",
+          "type": "numeric",
+          "range": { "max": 0.004 },
+          "unit": "%"
+        },
+        {
+          "test": "Readily Oxidizable Substances",
+          "specification": "The permanganate color of the mixture does not completely disappear within 15mins",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Water (H2O)",
+          "specification": "Not more than 0.5 %",
+          "type": "numeric",
+          "range": { "max": 0.5 },
+          "unit": "%"
+        },
+        {
+          "test": "Assay (as (CH3)2CO)(calc on anhydrous basis)",
+          "specification": "NLT 99.0 %",
+          "type": "numeric",
+          "range": { "min": 99.0 },
+          "unit": "%"
+        },
+        {
+          "test": "Benzene",
+          "specification": "Not more than.2 ppm",
+          "type": "numeric",
+          "range": { "max": 2 },
+          "unit": "ppm"
+        }
+      ]
+    },
+    {
+      "code": "F2506002M",
+      "name": "MDC Multi",
+      "productName": "MDC (Methylene Dichloride) - Meets NF and EP/BP Specifications",
+      "category": "finish-goods",
+      "standard": "NF/EP/BP",
+      "tests": [
+        {
+          "test": "Meets NF Requirements",
+          "specification": "",
+          "type": "header"
+        },
+        {
+          "test": "Description",
+          "specification": "A Clear colorless, mobile liquid having odor resembling that of chloroform",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with alcohol, ether and fixed oils",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Assay",
+          "specification": "Not less than 99.0%",
+          "type": "numeric",
+          "range": { "min": 99.0 },
+          "unit": "%"
+        },
+        {
+          "test": "Identification by IR",
+          "specification": "The IR absorption spectrum of the vapor shows strong doublet peaks at 7.8 and 7.9 µm and at 13.2 and 13.4 µm, and relatively few minor peaks",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Free chlorine (Cl2)",
+          "specification": "The lower layer does not show a violet tint",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Hydrogen Chloride (HCl)",
+          "specification": "NMT 0.001%; the pink color in the sample cylinder is at least as intense as that in the comparison cylinder, and the color persists for NLT 15 min",
+          "type": "numeric",
+          "range": { "max": 0.001 },
+          "unit": "%"
+        },
+        {
+          "test": "Non Volatile Residue",
+          "specification": "NMT 0.002%; NMT 1 mg of residue",
+          "type": "numeric",
+          "range": { "max": 0.002 },
+          "unit": "%"
+        },
+        {
+          "test": "Specific Gravity at 25c",
+          "specification": "1.318 - 1.322",
+          "type": "numeric",
+          "range": { "min": 1.318, "max": 1.322 },
+          "unit": ""
+        },
+        {
+          "test": "Water",
+          "specification": "Not more than 0.02 %",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "%"
+        },
+        {
+          "test": "Meets EP/BP Chemical Specifications",
+          "specification": "",
+          "type": "header"
+        },
+        {
+          "test": "Description",
+          "specification": "A Clear colorless, volatile liquid.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Sparingle soluble in water, miscible with alcohol",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification B (Refractive Index)",
+          "specification": "1.423-1.425",
+          "type": "numeric",
+          "range": { "min": 1.423, "max": 1.425 },
+          "unit": ""
+        },
+        {
+          "test": "Identification C (By IR)",
+          "specification": "The sample spectrum should match that of the reference standard",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Appearance",
+          "specification": "It is clear and colourless.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity",
+          "specification": "Not more than 0.15 mL of 0.1 M sodium hydroxide is required to change the colour of the indicator to blue.",
+          "type": "numeric",
+          "range": { "max": 0.15 },
+          "unit": "mL"
+        },
+        {
+          "test": "Relative Density",
+          "specification": "1.320 - 1.332",
+          "type": "numeric",
+          "range": { "min": 1.320, "max": 1.332 },
+          "unit": ""
+        },
+        {
+          "test": "Refractive Index",
+          "specification": "1.423 - 1.425",
+          "type": "numeric",
+          "range": { "min": 1.423, "max": 1.425 },
+          "unit": ""
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Ethanol",
+          "specification": "Maximum 2.0 %",
+          "type": "numeric",
+          "range": { "max": 2.0 },
+          "unit": "%"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: 2-Methylbut-2-ene",
+          "specification": "Maximum 300 ppm",
+          "type": "numeric",
+          "range": { "max": 300 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Impurity A",
+          "specification": "Maximum 10 ppm",
+          "type": "numeric",
+          "range": { "max": 10 },
+          "unit": "ppm",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Impurity B",
+          "specification": "Maximum 50 ppm",
+          "type": "numeric",
+          "range": { "max": 50 },
+          "unit": "ppm",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Total of Impurities other than ethanol and 2-methybut-2-ene",
+          "specification": "Maximum 0.1 %",
+          "type": "numeric",
+          "range": { "max": 0.1 },
+          "unit": "%"
+        },
+        {
+          "test": "Free Chlorine (Cl2)",
+          "specification": "No blue colour develops",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Residue on evaporation",
+          "specification": "Maximum 20 ppm",
+          "type": "numeric",
+          "range": { "max": 20 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Water",
+          "specification": "Maximum 0.02 %",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "code": "F2506002",
+      "name": "MDC NF",
+      "productName": "MDC (Methylene Dichloride) - Meets NF Requirements",
+      "category": "finish-goods",
+      "standard": "NF",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "A Clear colorless, mobile liquid having odor resembling that of chloroform",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with alcohol, ether and fixed oils",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Assay",
+          "specification": "Not less than 99.0%",
+          "type": "numeric",
+          "range": { "min": 99.0 },
+          "unit": "%"
+        },
+        {
+          "test": "Identification by IR",
+          "specification": "The IR absorption spectrum of the vapor shows strong doublet peaks at 7.8 and 7.9 µm and at 13.2 and 13.4 µm, and relatively few minor peaks",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Free chlorine (Cl2)",
+          "specification": "The lower layer does not show a violet tint",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Hydrogen Chloride (HCl)",
+          "specification": "NMT 0.001%; the pink color in the sample cylinder is at least as intense as that in the comparison cylinder, and the color persists for NLT 15 min",
+          "type": "numeric",
+          "range": { "max": 0.001 },
+          "unit": "%"
+        },
+        {
+          "test": "Non Volatile Residue",
+          "specification": "NMT 0.002%; NMT 1 mg of residue",
+          "type": "numeric",
+          "range": { "max": 0.002 },
+          "unit": "%"
+        },
+        {
+          "test": "Specific Gravity at 25c",
+          "specification": "1.318 - 1.322",
+          "type": "numeric",
+          "range": { "min": 1.318, "max": 1.322 },
+          "unit": ""
+        },
+        {
+          "test": "Water",
+          "specification": "Not more than 0.02 %",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "code": "F2507002",
+      "name": "MDC EP/BP",
+      "productName": "MDC (Methylene Dichloride) - Meets EP/BP Specifications",
+      "category": "finish-goods",
+      "standard": "EP/BP",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "A Clear colorless, volatile liquid.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Sparingle soluble in water, miscible with alcohol",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification B (Refractive Index)",
+          "specification": "1.423-1.425",
+          "type": "numeric",
+          "range": { "min": 1.423, "max": 1.425 },
+          "unit": ""
+        },
+        {
+          "test": "Identification C (By IR)",
+          "specification": "The sample spectrum should match that of the reference standard",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Appearance",
+          "specification": "It is clear and colourless.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity",
+          "specification": "Not more than 0.15 mL of 0.1 M sodium hydroxide is required to change the colour of the indicator to blue.",
+          "type": "numeric",
+          "range": { "max": 0.15 },
+          "unit": "mL"
+        },
+        {
+          "test": "Relative Density",
+          "specification": "1.320 - 1.332",
+          "type": "numeric",
+          "range": { "min": 1.320, "max": 1.332 },
+          "unit": ""
+        },
+        {
+          "test": "Refractive Index",
+          "specification": "1.423 - 1.425",
+          "type": "numeric",
+          "range": { "min": 1.423, "max": 1.425 },
+          "unit": ""
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Ethanol",
+          "specification": "Maximum 2.0 %",
+          "type": "numeric",
+          "range": { "max": 2.0 },
+          "unit": "%"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: 2-Methylbut-2-ene",
+          "specification": "Maximum 300 ppm",
+          "type": "numeric",
+          "range": { "max": 300 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Impurity A",
+          "specification": "Maximum 10 ppm",
+          "type": "numeric",
+          "range": { "max": 10 },
+          "unit": "ppm",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Impurity B",
+          "specification": "Maximum 50 ppm",
+          "type": "numeric",
+          "range": { "max": 50 },
+          "unit": "ppm",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Ethanol, 2-methylbut-2-ene, and volatile impurities: Total of Impurities other than ethanol and 2-methybut-2-ene",
+          "specification": "Maximum 0.1 %",
+          "type": "numeric",
+          "range": { "max": 0.1 },
+          "unit": "%"
+        },
+        {
+          "test": "Free Chlorine (Cl2)",
+          "specification": "No blue colour develops",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Residue on evaporation",
+          "specification": "Maximum 20 ppm",
+          "type": "numeric",
+          "range": { "max": 20 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Water",
+          "specification": "Maximum 0.02 %",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "code": "F2509003",
+      "name": "Methanol NF",
+      "productName": "Methanol - Meets NF Requirements",
+      "category": "finish-goods",
+      "standard": "NF",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "Clear colorless liquid having a characteristic odor, Is flammable.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water, alcohol, ether, Benzene.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Assay (CH3OH) (by GC)",
+          "specification": "Not less than 99.5 %",
+          "type": "numeric",
+          "range": { "min": 99.5 },
+          "unit": "%"
+        },
+        {
+          "test": "Identification A (By IR)",
+          "specification": "The IR absorption spectrum of the standard should match with that of IR absorption spectrum of sample.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification B (By GC)",
+          "specification": "The retention time of the major peak of the sample solution correspond to that of the standard solution, as obtained in the Assay.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity",
+          "specification": "Not more than 0.45 mL of 0.020N is required to produce a Pink color.",
+          "type": "numeric",
+          "range": { "max": 0.45 },
+          "unit": "mL"
+        },
+        {
+          "test": "Alkalinity (as NH3)",
+          "specification": "Not more than 0.20 mL of 0.020N Sulphuric acid is required to produce a pink color (3 ppm).",
+          "type": "numeric",
+          "range": { "max": 0.20 },
+          "unit": "mL"
+        },
+        {
+          "test": "Non-volatile Residue",
+          "specification": "The weight of the residue does not exceed 2 mg, corresponding to not more than 0.001% w/w.",
+          "type": "numeric",
+          "range": { "max": 0.001 },
+          "unit": "%w/w"
+        },
+        {
+          "test": "Readily Carbonisable Substances",
+          "specification": "No discoloration develops",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Readily Oxidizable Substances",
+          "specification": "The Pink color does not completely disappear within 5mins",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acetone, Aldehydes (as Acetone)",
+          "specification": "Any turbidity produce in the sample solution is not great than that produce in the standard solution (0.003%)",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Water (H2O) (by Karl Fischer titration)",
+          "specification": "Not more than 0.1%",
+          "type": "numeric",
+          "range": { "max": 0.1 },
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "code": "F2510002",
+      "name": "Methanol ND",
+      "productName": "Methanol - Normal Duty",
+      "category": "finish-goods",
+      "standard": "ND",
+      "tests": [
+        {
+          "test": "Appearance",
+          "specification": "Colorless particulate free liquid.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification by GC",
+          "specification": "To match with standard",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Non-Volatile Matter",
+          "specification": "Maximum 0.01%",
+          "type": "numeric",
+          "range": { "max": 0.01 },
+          "unit": "%"
+        },
+        {
+          "test": "Purity",
+          "specification": "Minimum 99.5% by area normalization",
+          "type": "numeric",
+          "range": { "min": 99.5 },
+          "unit": "%"
+        },
+        {
+          "test": "Benzene",
+          "specification": "Maximum 2ppm",
+          "type": "numeric",
+          "range": { "max": 2 },
+          "unit": "ppm"
+        }
+      ]
+    },
+    {
+      "code": "RM2509004",
+      "name": "Methanol HPLC",
+      "productName": "Methanol - HPLC Grade",
+      "category": "finish-goods",
+      "standard": "HPLC",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "A clear colourless liquid.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification by GC",
+          "specification": "To match with standard",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water forming clear colourless solution",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Water by KF",
+          "specification": "Not more than 0.05 %w/v",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "%w/v"
+        },
+        {
+          "test": "Residue on evaporation",
+          "specification": "Not more than 0.0005 %",
+          "type": "numeric",
+          "range": { "max": 0.0005 },
+          "unit": "%"
+        },
+        {
+          "test": "Acidity",
+          "specification": "Not more than 0.001% w/v",
+          "type": "numeric",
+          "range": { "max": 0.001 },
+          "unit": "%w/v"
+        },
+        {
+          "test": "Purity by GC",
+          "specification": "Not less than 99.8 %",
+          "type": "numeric",
+          "range": { "min": 99.8 },
+          "unit": "%"
+        },
+        {
+          "test": "Benzene content by GC HSS",
+          "specification": "Not more than 2.0 ppm",
+          "type": "numeric",
+          "range": { "max": 2.0 },
+          "unit": "ppm"
+        }
+      ]
+    },
+    {
+      "code": "RM2509007",
+      "name": "Methanol EP/BP",
+      "productName": "Methanol - Meets EP/BP Specifications",
+      "category": "finish-goods",
+      "standard": "EP/BP",
+      "tests": [
+        {
+          "test": "Appearance",
+          "specification": "Clear colorless volatile, hygroscopic liquid.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water and with methylene chloride.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification A (By Refractive Index)",
+          "specification": "1.328 to 1.330",
+          "type": "numeric",
+          "range": { "min": 1.328, "max": 1.330 },
+          "unit": ""
+        },
+        {
+          "test": "Identification B (By IR)",
+          "specification": "The sample spectrum matches that of the reference standard.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity or Alkalinity",
+          "specification": "Not more than 0.9 mL of 0.01 M sodium hydroxide is required to change the colour of the indicator to Pink.",
+          "type": "numeric",
+          "range": { "max": 0.9 },
+          "unit": "mL"
+        },
+        {
+          "test": "Relative Density",
+          "specification": "0.791 – 0.793",
+          "type": "numeric",
+          "range": { "min": 0.791, "max": 0.793 },
+          "unit": ""
+        },
+        {
+          "test": "Absorbance - Absorbance at 230 nm (au)",
+          "specification": "Max. 0.15",
+          "type": "numeric",
+          "range": { "max": 0.15 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Absorbance at 250 nm (au)",
+          "specification": "Max 0.05",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Absorbance at 270 nm (au)",
+          "specification": "Max 0.02",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Absorbance at 290 nm (au)",
+          "specification": "Max 0.01",
+          "type": "numeric",
+          "range": { "max": 0.01 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Scan from 230 nm to 290 nm",
+          "specification": "The absorption curve is smooth",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Impurity A (Benzene)",
+          "specification": "Not more than 2 ppm",
+          "type": "numeric",
+          "range": { "max": 2 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Related Substances - Any Impurity",
+          "specification": "Not more than 0.1 %",
+          "type": "numeric",
+          "range": { "max": 0.1 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Total Impurity",
+          "specification": "Not more than 0.3 %",
+          "type": "numeric",
+          "range": { "max": 0.3 },
+          "unit": "%"
+        },
+        {
+          "test": "Reducing Substances",
+          "specification": "The pink color is not completely discharge within 5mins",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Residue on Evaporation",
+          "specification": "Maximum 10 ppm",
+          "type": "numeric",
+          "range": { "max": 10 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Water",
+          "specification": "Maximum 0.10 %",
+          "type": "numeric",
+          "range": { "max": 0.10 },
+          "unit": "%"
+        }
+      ]
+    },
+    {
+      "code": "RM2509007M",
+      "name": "Methanol Multi",
+      "productName": "Methanol - Meets NF and EP/BP Specifications",
+      "category": "finish-goods",
+      "standard": "NF/EP/BP",
+      "tests": [
+        {
+          "test": "Meets NF Requirements",
+          "specification": "",
+          "type": "header"
+        },
+        {
+          "test": "Description",
+          "specification": "Clear colorless liquid having a characteristic odor, Is flammable.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water, alcohol, ether, Benzene.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Assay (CH3OH) (by GC)",
+          "specification": "Not less than 99.5 %",
+          "type": "numeric",
+          "range": { "min": 99.5 },
+          "unit": "%"
+        },
+        {
+          "test": "Identification A (By IR)",
+          "specification": "The IR absorption spectrum of the standard should match with that of IR absorption spectrum of sample.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification B (By GC)",
+          "specification": "The retention time of the major peak of the sample solution correspond to that of the standard solution, as obtained in the Assay.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity",
+          "specification": "Not more than 0.45 mL of 0.020N is required to produce a Pink color.",
+          "type": "numeric",
+          "range": { "max": 0.45 },
+          "unit": "mL"
+        },
+        {
+          "test": "Alkalinity (as NH3)",
+          "specification": "Not more than 0.20 mL of 0.020N Sulphuric acid is required to produce a pink color (3 ppm).",
+          "type": "numeric",
+          "range": { "max": 0.20 },
+          "unit": "mL"
+        },
+        {
+          "test": "Non-volatile Residue",
+          "specification": "The weight of the residue does not exceed 2 mg, corresponding to not more than 0.001% w/w.",
+          "type": "numeric",
+          "range": { "max": 0.001 },
+          "unit": "%w/w"
+        },
+        {
+          "test": "Readily Carbonisable Substances",
+          "specification": "No discoloration develops",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Readily Oxidizable Substances",
+          "specification": "The Pink color does not completely disappear within 5mins",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acetone, Aldehydes (as Acetone)",
+          "specification": "Any turbidity produce in the sample solution is not great than that produce in the standard solution (0.003%)",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Water (H2O) (by Karl Fischer titration)",
+          "specification": "Not more than 0.1%",
+          "type": "numeric",
+          "range": { "max": 0.1 },
+          "unit": "%"
+        },
+        {
+          "test": "Meets EP/BP Chemical Specifications",
+          "specification": "",
+          "type": "header"
+        },
+        {
+          "test": "Appearance",
+          "specification": "Clear colorless volatile, hygroscopic liquid.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water and with methylene chloride.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Identification A (By Refractive Index)",
+          "specification": "1.328 to 1.330",
+          "type": "numeric",
+          "range": { "min": 1.328, "max": 1.330 },
+          "unit": ""
+        },
+        {
+          "test": "Identification B (By IR)",
+          "specification": "The sample spectrum matches that of the reference standard.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Acidity or Alkalinity",
+          "specification": "Not more than 0.9 mL of 0.01 M sodium hydroxide is required to change the colour of the indicator to Pink.",
+          "type": "numeric",
+          "range": { "max": 0.9 },
+          "unit": "mL"
+        },
+        {
+          "test": "Relative Density",
+          "specification": "0.791 – 0.793",
+          "type": "numeric",
+          "range": { "min": 0.791, "max": 0.793 },
+          "unit": ""
+        },
+        {
+          "test": "Absorbance - Absorbance at 230 nm (au)",
+          "specification": "Max. 0.15",
+          "type": "numeric",
+          "range": { "max": 0.15 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Absorbance at 250 nm (au)",
+          "specification": "Max 0.05",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Absorbance at 270 nm (au)",
+          "specification": "Max 0.02",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Absorbance at 290 nm (au)",
+          "specification": "Max 0.01",
+          "type": "numeric",
+          "range": { "max": 0.01 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance - Scan from 230 nm to 290 nm",
+          "specification": "The absorption curve is smooth",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Impurity A (Benzene)",
+          "specification": "Not more than 2 ppm",
+          "type": "numeric",
+          "range": { "max": 2 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Related Substances - Any Impurity",
+          "specification": "Not more than 0.1 %",
+          "type": "numeric",
+          "range": { "max": 0.1 },
+          "unit": "%",
+          "detectable": "Not Detected"
+        },
+        {
+          "test": "Related Substances - Total Impurity",
+          "specification": "Not more than 0.3 %",
+          "type": "numeric",
+          "range": { "max": 0.3 },
+          "unit": "%"
+        },
+        {
+          "test": "Reducing Substances",
+          "specification": "The pink color is not completely discharge within 5mins",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Residue on Evaporation",
+          "specification": "Maximum 10 ppm",
+          "type": "numeric",
+          "range": { "max": 10 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Water",
+          "specification": "Maximum 0.10 %",
+          "type": "numeric",
+          "range": { "max": 0.10 },
+          "unit": "%"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "ccpl@2024",
+      "name": "Administrator",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "username": "qc_manager",
+      "password": "qcmanager123",
+      "name": "QC Manager",
+      "role": "manager"
+    },
+    {
+      "id": 3,
+      "username": "qc_analyst1",
+      "password": "analyst001",
+      "name": "QC Analyst 1",
+      "role": "analyst"
+    },
+    {
+      "id": 4,
+      "username": "qc_analyst2",
+      "password": "analyst002",
+      "name": "QC Analyst 2",
+      "role": "analyst"
+    },
+    {
+      "id": 5,
+      "username": "lab_tech",
+      "password": "labtech2024",
+      "name": "Lab Technician",
+      "role": "technician"
+    }
+  ]
+}

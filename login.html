@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - COA Generator CCPL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .ccpl-logo {
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .company-name {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .login-title {
+            font-size: 14px;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #fee;
+            border: 2px solid #fcc;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .toggle-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            user-select: none;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 30px 25px;
+            }
+
+            .ccpl-logo {
+                font-size: 40px;
+            }
+
+            .company-name {
+                font-size: 14px;
+            }
+
+            .login-title {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 25px 20px;
+            }
+
+            .ccpl-logo {
+                font-size: 36px;
+            }
+
+            input[type="text"],
+            input[type="password"] {
+                padding: 12px 14px;
+                font-size: 15px;
+            }
+
+            .login-btn {
+                padding: 13px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+ <div class="ccpl-logo">
+                    <img src="1.png" alt="CCPL Logo" style="height:80px;">
+                </div>            <div class="company-name">Cognizant Chemical Pvt. Ltd.</div>
+            <div class="login-title">COA Generator System</div>
+        </div>
+
+        <div id="errorMessage" class="error-message">
+            Invalid username or password
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-toggle">
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                    <span class="toggle-icon" onclick="togglePassword()">👁️</span>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+
+        <div class="footer-text">
+            Secure Login Portal<br>
+            © 2024 CCPL. All rights reserved.
+        </div>
+    </div>
+
+    <script>
+        // For demo purposes, storing users in localStorage
+        // In production, this would be handled by a backend server
+        const USERS_KEY = 'ccpl_users';
+
+        // Initialize users in localStorage if not exists
+        function initializeUsers() {
+            if (!localStorage.getItem(USERS_KEY)) {
+                const defaultUsers = [
+                    { id: 1, username: 'admin', password: 'ccpl@2024', name: 'Administrator', role: 'admin' },
+                    { id: 2, username: 'qc_manager', password: 'qcmanager123', name: 'QC Manager', role: 'manager' },
+                    { id: 3, username: 'qc_analyst1', password: 'analyst001', name: 'QC Analyst 1', role: 'analyst' },
+                    { id: 4, username: 'qc_analyst2', password: 'analyst002', name: 'QC Analyst 2', role: 'analyst' },
+                    { id: 5, username: 'lab_tech', password: 'labtech2024', name: 'Lab Technician', role: 'technician' }
+                ];
+                localStorage.setItem(USERS_KEY, JSON.stringify(defaultUsers));
+            }
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
+        // Handle login form submission
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+
+            // Find matching user
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                // Successful login
+                errorMessage.classList.remove('show');
+
+                // Store session
+                sessionStorage.setItem('ccpl_user', JSON.stringify({
+                    id: user.id,
+                    username: user.username,
+                    name: user.name,
+                    role: user.role,
+                    loginTime: new Date().toISOString()
+                }));
+
+                // Redirect to main application
+                window.location.href = 'index.html';
+            } else {
+                // Failed login
+                errorMessage.classList.add('show');
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+
+                // Hide error after 3 seconds
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Check if already logged in
+        function checkExistingSession() {
+            const user = sessionStorage.getItem('ccpl_user');
+            if (user) {
+                // Already logged in, redirect to main app
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeUsers();
+            checkExistingSession();
+            document.getElementById('username').focus();
+        });
+
+        // Handle Enter key in password field
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin(e);
+            }
+        });
+    </script>
+</body>
+</html>

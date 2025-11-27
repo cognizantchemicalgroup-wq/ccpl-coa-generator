@@ -1,0 +1,189 @@
+{
+  "products": [
+    {
+      "code": "RM2506001",
+      "name": "Methanol (Methyl Alcohol)",
+      "chemicalName": "Methanol (CH3OH)",
+      "category": "raw-material",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "A clear colourless volatile, Hygroscopic liquid with characteristic odor. Its flammable",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water, Methylene Chloride, with Alcohol, with ether, with Benzene and with most other organic solvents.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Assay (CH3OH) (By GC)",
+          "specification": "NLT 99.5%",
+          "type": "numeric",
+          "range": { "min": 99.5 },
+          "unit": "%"
+        },
+        {
+          "test": "Acidity or Alkalinity",
+          "specification": "Not more than 0.9ml of 0.01M Sodium Hydroxide is required to change the color of the indicator to Pink",
+          "type": "numeric",
+          "range": { "max": 0.9 },
+          "unit": "mL"
+        },
+        {
+          "test": "Relative Density",
+          "specification": "0.791-0.793",
+          "type": "numeric",
+          "range": { "min": 0.791, "max": 0.793 },
+          "unit": ""
+        },
+        {
+          "test": "Absorbance (For Information Only) - Absorbance at 230nm (au)",
+          "specification": "Max 0.15",
+          "type": "numeric",
+          "range": { "max": 0.15 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance (For Information Only) - Absorbance at 250nm (au)",
+          "specification": "Max 0.05",
+          "type": "numeric",
+          "range": { "max": 0.05 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance (For Information Only) - Absorbance at 270nm (au)",
+          "specification": "Max 0.02",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance (For Information Only) - Absorbance at 290nm (au)",
+          "specification": "Max 0.01",
+          "type": "numeric",
+          "range": { "max": 0.01 },
+          "unit": "au"
+        },
+        {
+          "test": "Absorbance (For Information Only) - Scan from 230nm to 290nm",
+          "specification": "The absorbance curve is smooth",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Water by KF",
+          "specification": "Not more than 0.10 %w/v",
+          "type": "numeric",
+          "range": { "max": 0.10 },
+          "unit": "%w/v"
+        }
+      ]
+    },
+    {
+      "code": "RM2506002",
+      "name": "Methylene Chloride",
+      "chemicalName": "Methylene Chloride (CH2Cl2)",
+      "category": "raw-material",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "Clear Colorless Volatile mobile, sweet smelling liquid having an order resembling that of chloroform.",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Assay",
+          "specification": "NLT 99.0%",
+          "type": "numeric",
+          "range": { "min": 99.0 },
+          "unit": "%"
+        },
+        {
+          "test": "Free chlorine (Cl2)",
+          "specification": "Max 1.0ppm",
+          "type": "numeric",
+          "range": { "max": 1.0 },
+          "unit": "ppm"
+        },
+        {
+          "test": "Water",
+          "specification": "Max 0.02%",
+          "type": "numeric",
+          "range": { "max": 0.02 },
+          "unit": "%"
+        },
+        {
+          "test": "Relative Density",
+          "specification": "1.320-1.322",
+          "type": "numeric",
+          "range": { "min": 1.320, "max": 1.322 },
+          "unit": ""
+        },
+        {
+          "test": "Residue on evaporation",
+          "specification": "Max 20ppm",
+          "type": "numeric",
+          "range": { "max": 20 },
+          "unit": "ppm"
+        }
+      ]
+    },
+    {
+      "code": "RM2506004",
+      "name": "Acetone",
+      "chemicalName": "Acetone ((CH3)2CO)",
+      "category": "raw-material",
+      "tests": [
+        {
+          "test": "Description",
+          "specification": "Transparent, clear colorless, mobile, Volatile liquid having a characteristic odor",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Solubility",
+          "specification": "Miscible with water, with ethanol (96%) with ether, with chloroform and with most volatile oils",
+          "type": "compliance",
+          "required": "Complies"
+        },
+        {
+          "test": "Specific Gravity at 25c",
+          "specification": "0.791-0.793",
+          "type": "numeric",
+          "range": { "min": 0.791, "max": 0.793 },
+          "unit": ""
+        },
+        {
+          "test": "Non-volatile Residue",
+          "specification": "0.004%",
+          "type": "numeric",
+          "range": { "max": 0.004 },
+          "unit": "%"
+        },
+        {
+          "test": "Readily Oxidizable Substances",
+          "specification": "Passes test",
+          "type": "compliance",
+          "required": "Passes test"
+        },
+        {
+          "test": "Water (H2O)",
+          "specification": "Max 0.3%",
+          "type": "numeric",
+          "range": { "max": 0.3 },
+          "unit": "%"
+        },
+        {
+          "test": "Assay (as (CH3)2CO) (Cal on anhydrous basis)",
+          "specification": "NLT 99.0%",
+          "type": "numeric",
+          "range": { "min": 99.0 },
+          "unit": "%"
+        }
+      ]
+    }
+  ]
+}
