@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -207,6 +210,59 @@
             color: #555;
         }
 
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -285,11 +341,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>Saved Documents</h1>
             <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportToExcel()">Export to Excel</button>
                 <a href="index.html" class="btn btn-primary">New COA</a>
                 <button class="btn btn-danger" onclick="handleLogout()">Logout</button>
             </div>
@@ -297,7 +355,8 @@
 
         <div class="search-filter">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search by Product Code, Name, or Batch No..." oninput="filterDocuments()">
+                <input type="text" id="searchInput" placeholder="Search by Product Code, Name, or Batch No..."
+                    oninput="filterDocuments()">
             </div>
             <div class="filter-box">
                 <select id="categoryFilter" onchange="filterDocuments()">
@@ -343,6 +402,12 @@
         </div>
     </div>
 
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Exporting to Excel...</div>
+    </div>
+
     <script>
         let allDocuments = [];
         let filteredDocuments = [];
@@ -386,9 +451,9 @@
                 if (!user) {
                     return;
                 }
-                
+
                 let querySnapshot;
-                
+
                 try {
                     // Try to filter by userId with orderBy (requires composite index)
                     querySnapshot = await db.collection('coa_documents')
@@ -402,7 +467,7 @@
                         const allDocs = await db.collection('coa_documents')
                             .orderBy('updatedAt', 'desc')
                             .get();
-                        
+
                         // Filter by userId in memory
                         allDocuments = [];
                         allDocs.forEach(doc => {
@@ -414,7 +479,7 @@
                                 });
                             }
                         });
-                        
+
                         filteredDocuments = allDocuments;
                         displayDocuments();
                         return;
@@ -486,7 +551,7 @@
             const categoryFilter = document.getElementById('categoryFilter').value;
 
             filteredDocuments = allDocuments.filter(doc => {
-                const matchesSearch = !searchTerm || 
+                const matchesSearch = !searchTerm ||
                     (doc.productCode && doc.productCode.toLowerCase().includes(searchTerm)) ||
                     (doc.productName && doc.productName.toLowerCase().includes(searchTerm)) ||
                     (doc.chemicalName && doc.chemicalName.toLowerCase().includes(searchTerm)) ||
@@ -508,22 +573,22 @@
                 if (!user) {
                     return;
                 }
-                
+
                 // Verify user owns this document before editing
                 const docRef = db.collection('coa_documents').doc(docId);
                 const doc = await docRef.get();
-                
+
                 if (!doc.exists) {
                     alert('Document not found!');
                     return;
                 }
-                
+
                 const data = doc.data();
                 if (data.userId !== user.id) {
                     alert('You do not have permission to edit this document. You can only edit your own documents.');
                     return;
                 }
-                
+
                 window.location.href = `index.html?edit=${docId}`;
             } catch (error) {
                 console.error('Error checking document ownership:', error);
@@ -543,23 +608,23 @@
                 if (!user) {
                     return;
                 }
-                
+
                 // Verify user owns this document before deleting
                 const docRef = db.collection('coa_documents').doc(docId);
                 const doc = await docRef.get();
-                
+
                 if (!doc.exists) {
                     alert('Document not found!');
                     return;
                 }
-                
+
                 const data = doc.data();
                 if (data.userId !== user.id) {
                     alert('You do not have permission to delete this document. You can only delete your own documents.');
                     loadDocuments(); // Refresh to remove any UI inconsistencies
                     return;
                 }
-                
+
                 await docRef.delete();
                 alert('Document deleted successfully!');
                 loadDocuments();
@@ -577,33 +642,33 @@
                 if (!user) {
                     return;
                 }
-                
+
                 console.log('Preview PDF for document:', docId);
                 const docRef = db.collection('coa_documents').doc(docId);
                 const doc = await docRef.get();
-                
+
                 if (!doc.exists) {
                     alert('Document not found!');
                     return;
                 }
 
                 const data = doc.data();
-                
+
                 // Verify user owns this document
                 if (data.userId !== user.id) {
                     alert('You do not have permission to view this document. You can only view your own documents.');
                     return;
                 }
                 console.log('Generating PDF for preview...', data);
-                
+
                 // Show loading
                 const iframe = document.getElementById('pdfPreview');
                 iframe.src = 'about:blank';
                 document.getElementById('previewModal').style.display = 'block';
-                
+
                 const pdfBlob = await generatePDFFromData(data);
                 const pdfUrl = URL.createObjectURL(pdfBlob);
-                
+
                 iframe.src = pdfUrl;
                 console.log('PDF preview loaded');
             } catch (error) {
@@ -621,45 +686,45 @@
                 if (!user) {
                     return;
                 }
-                
+
                 console.log('Download PDF for document:', docId);
                 const docRef = db.collection('coa_documents').doc(docId);
                 const doc = await docRef.get();
-                
+
                 if (!doc.exists) {
                     alert('Document not found!');
                     return;
                 }
 
                 const data = doc.data();
-                
+
                 // Verify user owns this document
                 if (data.userId !== user.id) {
                     alert('You do not have permission to download this document. You can only download your own documents.');
                     return;
                 }
                 console.log('Generating PDF for download...', data);
-                
+
                 const pdfBlob = await generatePDFFromData(data);
                 const pdfUrl = URL.createObjectURL(pdfBlob);
-                
+
                 // Generate filename
                 const productCode = data.productCode || 'COA';
                 const batchNo = data.batchNo || 'BATCH';
                 const fileName = `COA_${productCode}_${batchNo}.pdf`;
-                
+
                 const link = document.createElement('a');
                 link.href = pdfUrl;
                 link.download = fileName;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                
+
                 // Clean up after a delay
                 setTimeout(() => {
                     URL.revokeObjectURL(pdfUrl);
                 }, 100);
-                
+
                 console.log('PDF downloaded:', fileName);
             } catch (error) {
                 console.error('Error generating PDF:', error);
@@ -670,7 +735,7 @@
         // Generate PDF from saved data - matches the format from index.html
         async function generatePDFFromData(data) {
             const { jsPDF } = window.jspdf;
-            
+
             // Logo - load from index.html's logo string
             // Using the complete logo string (same as index.html)
             let logo = null;
@@ -686,7 +751,7 @@
                 console.warn('Could not load logo, PDF will generate without it');
                 logo = null;
             }
-            
+
             // If still no logo, continue without it
             if (!logo) {
                 console.log('Generating PDF without logo');
@@ -866,7 +931,7 @@
                 }
 
                 let result = testResult.result || '-';
-                
+
                 // Auto add unit if specification has unit
                 const unit = extractUnit(testResult.specification);
                 if (unit && !isNaN(result) && !result.includes(unit)) {
@@ -958,12 +1023,176 @@
         }
 
         // Close modal when clicking outside
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('previewModal');
             if (event.target == modal) {
                 closePreview();
             }
         }
+    </script>
+    <script>
+        // Export to Excel with structured block grouping (UI match)
+        async function exportToExcel() {
+            try {
+                // Check if ExcelJS is loaded
+                if (typeof ExcelJS === 'undefined') {
+                    alert('Excel export library is loading. Please wait a moment and try again.');
+                    return;
+                }
+
+                // Show loading
+                document.getElementById('loadingOverlay').classList.add('active');
+
+                const documentsToExport = filteredDocuments.length > 0 ? filteredDocuments : allDocuments;
+                if (documentsToExport.length === 0) {
+                    alert('No documents to export');
+                    document.getElementById('loadingOverlay').classList.remove('active');
+                    return;
+                }
+
+                // Group documents by category and product
+                const groupedData = {};
+                documentsToExport.forEach(doc => {
+                    const category = doc.category || 'Unknown';
+                    const productName = doc.productName || doc.chemicalName || 'Unknown Product';
+
+                    if (!groupedData[category]) groupedData[category] = {};
+                    if (!groupedData[category][productName]) groupedData[category][productName] = [];
+                    groupedData[category][productName].push(doc);
+                });
+
+                // Create Workbook & Worksheet
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('COA Report');
+
+                // Styling helpers
+                const titleFont = { bold: true, size: 16, color: { argb: 'FF2C3E50' } };
+                const subTitleFont = { bold: true, size: 14, color: { argb: 'FF34495E' } };
+                const boldFont = { bold: true };
+                const headerStyle = {
+                    font: { bold: true, color: { argb: 'FFFFFFFF' } },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF667EEA' } },
+                    alignment: { horizontal: 'center', vertical: 'middle' },
+                    border: {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    }
+                };
+                const borderStyle = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+
+                const sortedCategories = Object.keys(groupedData).sort();
+                for (const category of sortedCategories) {
+                    const products = Object.keys(groupedData[category]).sort();
+
+                    for (const productName of products) {
+                        const batches = groupedData[category][productName];
+
+                        // 1. Identify all dynamic test columns for this specific product
+                        const dynamicTestsSet = new Set();
+                        batches.forEach(b => {
+                            if (b.testResults && Array.isArray(b.testResults)) {
+                                b.testResults.forEach(res => {
+                                    // Skip description as it has its own fixed column, and skip internal headers
+                                    if (res.test && res.type !== 'header' && res.test.toLowerCase() !== 'description') {
+                                        dynamicTestsSet.add(res.test);
+                                    }
+                                });
+                            }
+                        });
+                        const dynamicTests = Array.from(dynamicTestsSet);
+
+                        // 2. Create Header Row
+                        const tableHeaders = [
+                            'sr no',
+                            'Name',
+                            'Select Chemical:',
+                            'Batch No.:',
+                            'Manufacturing Date:',
+                            'Expiry Date (Auto-calculated):',
+                            'Description',
+                            ...dynamicTests
+                        ];
+
+                        const headerRow = worksheet.addRow(tableHeaders);
+                        headerRow.height = 35; // Taller header for wrap text
+                        headerRow.eachCell((cell) => {
+                            cell.font = { bold: true, size: 10 };
+                            cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                            cell.border = borderStyle;
+                        });
+
+                        // 3. Add Data Rows for each Batch
+                        batches.forEach((batch, index) => {
+                            const rowData = [
+                                index + 1,
+                                `${batch.category || 'Unknown'} Test`,
+                                batch.productName || batch.chemicalName || '',
+                                batch.batchNo || '',
+                                formatDateForPDF(batch.mfgDate),
+                                formatDateForPDF(batch.expiryDate),
+                                '' // Description Placeholder
+                            ];
+
+                            // Fill Description
+                            if (batch.testResults) {
+                                const descRes = batch.testResults.find(r => (r.test || '').toLowerCase() === 'description');
+                                if (descRes) rowData[6] = descRes.result || '';
+                            }
+
+                            // Fill Dynamic Tests
+                            dynamicTests.forEach(testName => {
+                                const matchedTest = batch.testResults.find(r => r.test === testName);
+                                rowData.push(matchedTest ? matchedTest.result || '' : '');
+                            });
+
+                            const dataRow = worksheet.addRow(rowData);
+                            dataRow.eachCell((cell) => {
+                                cell.border = borderStyle;
+                                cell.alignment = { vertical: 'middle', wrapText: true };
+                                if (typeof cell.value === 'number') {
+                                    cell.alignment.horizontal = 'center';
+                                }
+                            });
+                        });
+
+                        // 4. Spacing between different product tables
+                        worksheet.addRow([]);
+                        worksheet.addRow([]);
+                    }
+                }
+
+                // Adjust Column Widths for readability
+                worksheet.columns.forEach((column, index) => {
+                    if (index === 0) column.width = 6; // sr no
+                    else if (index === 1) column.width = 15; // Name
+                    else if (index === 2) column.width = 25; // Select Chemical
+                    else if (index === 3) column.width = 10; // Batch No
+                    else if (index === 4 || index === 5) column.width = 12; // Dates
+                    else if (index === 6) column.width = 30; // Description
+                    else column.width = 18; // Test columns
+                });
+
+                // Export
+                const buffer = await workbook.xlsx.writeBuffer();
+                const dateStr = new Date().toISOString().split('T')[0];
+                saveAs(new Blob([buffer]), `COA_Export_${dateStr}.xlsx`);
+
+                alert('Excel exported successfully in Product-Wise Column Format!');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Export failed: ' + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').classList.remove('active');
+            }
+        }
+
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
@@ -972,4 +1201,5 @@
         });
     </script>
 </body>
+
 </html>
