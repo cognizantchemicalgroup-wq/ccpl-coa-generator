@@ -736,25 +736,20 @@
         async function generatePDFFromData(data) {
             const { jsPDF } = window.jspdf;
 
-            // Logo - load from index.html's logo string
-            // Using the complete logo string (same as index.html)
-            let logo = null;
-            try {
-                // Try to fetch the logo from the main page
-                const response = await fetch('index.html');
-                const html = await response.text();
-                const logoMatch = html.match(/const logo = "([^"]+)"/);
-                if (logoMatch && logoMatch[1]) {
-                    logo = logoMatch[1];
-                }
-            } catch (e) {
-                console.warn('Could not load logo, PDF will generate without it');
-                logo = null;
-            }
+            // Get logo from localStorage (Set by index.html)
+            let logo = localStorage.getItem('ccpl_logo');
 
-            // If still no logo, continue without it
+            // Backup fetch if localStorage is empty
             if (!logo) {
-                console.log('Generating PDF without logo');
+                try {
+                    const response = await fetch('index.html');
+                    const html = await response.text();
+                    const logoMatch = html.match(/const logo = "([^"]+)"/);
+                    if (logoMatch && logoMatch[1]) {
+                        logo = logoMatch[1];
+                        localStorage.setItem('ccpl_logo', logo);
+                    }
+                } catch (e) { console.warn('Logo load error'); }
             }
 
             const doc = new jsPDF({
@@ -764,243 +759,189 @@
             });
 
             // Watermark setup
-            const watermarkState = doc.GState({ opacity: 0.07 });
             function addWatermark() {
-                if (!logo) return; // Skip watermark if logo not available
+                if (!logo) return;
                 try {
                     const w = doc.internal.pageSize.getWidth();
                     const h = doc.internal.pageSize.getHeight();
+
+                    const watermarkState = doc.GState({ opacity: 0.1 }); // 0.1 Opacity as requested
+                    doc.saveGraphicsState();
                     doc.setGState(watermarkState);
-                    const wmWidth = 140;
-                    const wmHeight = 140;
-                    doc.addImage(logo, "PNG", (w - wmWidth) / 2, (h - wmHeight) / 2, wmWidth, wmHeight);
-                    doc.setGState(new doc.GState({ opacity: 1 }));
+
+                    const imgProps = doc.getImageProperties(logo);
+                    const wmWidth = w * 0.7; // 70% width
+                    const wmHeight = (imgProps.height * wmWidth) / imgProps.width;
+
+                    doc.addImage(logo, imgProps.fileType, (w - wmWidth) / 2, (h - wmHeight) / 2, wmWidth, wmHeight);
+                    doc.restoreGraphicsState();
                 } catch (e) {
-                    console.warn('Could not add watermark:', e);
+                    console.warn('Watermark error:', e);
                 }
             }
 
             let pageNumber = 1;
-            const totalPages = Math.ceil(data.testResults.length / 25) + 1;
+            // Calculate total pages for "Page X of Y"
+            const totalPages = Math.ceil(data.testResults.length / 18) + (data.testResults.length % 18 > 14 || data.testResults.length === 0 ? 1 : 1);
 
-            function addPageNumber(doc, currentPage, total) {
-                doc.setFontSize(9);
+            function addPageNumber(currentPage) {
+                doc.setFontSize(8);
                 doc.setFont(undefined, 'normal');
-                doc.setTextColor(100, 100, 100);
+                doc.setTextColor(150, 150, 150);
                 doc.text(`Page ${currentPage}`, 105, 290, { align: 'center' });
-                doc.setTextColor(0, 0, 0);
             }
 
-            function drawHeader(isFirstPage = true) {
-                doc.setFontSize(18);
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(102, 126, 234);
-                // Add logo only if available
+            function drawHeader() {
+                // Background watermark
+                addWatermark();
+
                 if (logo) {
                     try {
-                        doc.addImage(logo, "PNG", 160, 5, 30, 20);
-                    } catch (e) {
-                        console.warn('Could not add logo to header:', e);
-                    }
+                        const imgProps = doc.getImageProperties(logo);
+                        doc.addImage(logo, imgProps.fileType, 160, 5, 30, 20);
+                    } catch (e) { }
                 }
-                doc.setTextColor(0, 0, 0);
 
-                doc.setFontSize(12);
+                doc.setFontSize(18);
                 doc.setFont(undefined, 'bold');
-                const productNameText = data.productName || data.chemicalName;
-                const productNameLines = doc.splitTextToSize(productNameText, 120);
+                doc.setTextColor(79, 70, 229); // Indigo
+
+                doc.setFontSize(14);
+                const productNameLines = doc.splitTextToSize(data.productName || data.chemicalName || 'COA Report', 140);
                 doc.text(productNameLines, 15, 15);
 
-                let headerYPos = 15 + (productNameLines.length * 5);
-                if (data.productData && data.productData.standard) {
-                    doc.setFontSize(10);
-                    doc.text(data.productData.standard, 15, headerYPos + 3);
-                }
+                let headerYPos = 15 + (productNameLines.length * 6);
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(100, 100, 100);
+                doc.text(`${(data.category || 'N/A').toUpperCase()} TEST REPORT`, 15, headerYPos);
 
-                doc.setLineWidth(0.5);
                 doc.setDrawColor(102, 126, 234);
+                doc.setLineWidth(0.5);
                 doc.line(15, 28, 195, 28);
                 doc.setDrawColor(0, 0, 0);
                 doc.setLineWidth(0.1);
+                doc.setTextColor(0, 0, 0);
             }
 
-            // Helper function to extract unit from specification
-            function extractUnit(spec) {
-                const unitMatch = spec.match(/(%|ppm|mL|g\/L|au|g\/mL|%w\/v|%w\/w)/i);
-                return unitMatch ? unitMatch[1] : '';
-            }
+            drawHeader();
 
-            // First page setup
-            addWatermark();
-            drawHeader(true);
+            let yPos = 38;
+            doc.setFontSize(10);
 
-            let yPos = 35;
-            doc.setFontSize(9);
+            const info = [
+                { l: 'Product Name:', v: data.productName || data.chemicalName },
+                { l: 'Batch No.:', v: data.batchNo || 'N/A' },
+                { l: 'Manufacturing Date:', v: formatDateForPDF(data.mfgDate) },
+                { l: 'Expiry Date:', v: formatDateForPDF(data.expiryDate) }
+            ];
+
+            info.forEach(item => {
+                doc.setFont(undefined, 'bold');
+                doc.text(item.l, 15, yPos);
+                doc.setFont(undefined, 'normal');
+                const textLines = doc.splitTextToSize(item.v, 130);
+                doc.text(textLines, 60, yPos);
+                yPos += (textLines.length * 5) + 2;
+            });
+
+            yPos += 5;
+            doc.setFillColor(245, 247, 250);
+            doc.rect(15, yPos - 5, 180, 9, 'F');
             doc.setFont(undefined, 'bold');
-            doc.text('Product Name:', 15, yPos);
-            doc.setFont(undefined, 'normal');
-            const productNameText = data.productName || data.chemicalName;
-            const productNameLines = doc.splitTextToSize(productNameText, 125);
-            doc.text(productNameLines, 65, yPos);
-            yPos += productNameLines.length * 5 + 1;
+            doc.text('Test Parameter', 18, yPos + 1);
+            doc.text('Specification', 75, yPos + 1);
+            doc.text('Result', 158, yPos + 1);
+            doc.setDrawColor(102, 126, 234);
+            doc.line(15, yPos + 4, 195, yPos + 4);
+            yPos += 10;
 
-            doc.setFont(undefined, 'bold');
-            doc.text('Batch No.:', 15, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(data.batchNo || 'N/A', 65, yPos);
-            yPos += 6;
-
-            doc.setFont(undefined, 'bold');
-            doc.text('Manufacturing Date:', 15, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(formatDateForPDF(data.mfgDate), 65, yPos);
-            yPos += 6;
-
-            doc.setFont(undefined, 'bold');
-            doc.text('Expiry Date:', 15, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(formatDateForPDF(data.expiryDate), 65, yPos);
-            yPos += 6;
-
-            // Test results table header
-            yPos += 8;
-            doc.setFillColor(240, 240, 240);
-            doc.rect(15, yPos - 5, 180, 8, 'F');
-
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'bold');
-            doc.text('Test Parameter', 17, yPos);
-            doc.text('Specification', 75, yPos);
-            doc.text('Result', 155, yPos);
-
-            yPos += 2;
-            doc.setLineWidth(0.3);
-            doc.line(15, yPos, 195, yPos);
-            doc.setLineWidth(0.1);
-
-            doc.setFont(undefined, 'normal');
-            yPos += 6;
-
-            // Test results rows
             let testIndex = 0;
-            data.testResults.forEach((testResult) => {
-                // Check if we need a new page
-                if (yPos > 255) {
-                    addPageNumber(doc, pageNumber, totalPages);
+            data.testResults.forEach((test) => {
+                if (yPos > 245) {
+                    addPageNumber(pageNumber);
                     doc.addPage();
-                    addWatermark();
-                    drawHeader(false);
+                    drawHeader();
                     pageNumber++;
-                    yPos = 48;
+                    yPos = 50;
 
-                    // Redraw table header on new page
-                    doc.setFillColor(240, 240, 240);
-                    doc.rect(15, yPos - 5, 180, 8, 'F');
-
-                    doc.setFontSize(9);
+                    doc.setFillColor(245, 247, 250);
+                    doc.rect(15, yPos - 5, 180, 9, 'F');
                     doc.setFont(undefined, 'bold');
-                    doc.text('Test Parameter', 17, yPos);
-                    doc.text('Specification', 75, yPos);
-                    doc.text('Result', 155, yPos);
-
-                    yPos += 2;
-                    doc.setLineWidth(0.3);
-                    doc.line(15, yPos, 195, yPos);
-                    doc.setLineWidth(0.1);
-
-                    doc.setFont(undefined, 'normal');
-                    yPos += 6;
+                    doc.text('Test Parameter', 18, yPos + 1);
+                    doc.text('Specification', 75, yPos + 1);
+                    doc.text('Result', 158, yPos + 1);
+                    doc.line(15, yPos + 4, 195, yPos + 4);
+                    yPos += 12;
                 }
 
-                doc.setFontSize(8.5);
-
-                // Handle section headers
-                if (testResult.type === 'header') {
-                    yPos += 2;
-                    doc.setFontSize(9.5);
+                if (test.type === 'header') {
+                    doc.setFillColor(236, 242, 255);
+                    doc.rect(15, yPos - 5, 180, 10, 'F');
                     doc.setFont(undefined, 'bold');
-                    doc.setFillColor(102, 126, 234);
-                    doc.rect(15, yPos - 4, 180, 7, 'F');
-                    doc.setTextColor(255, 255, 255);
-                    doc.text(testResult.test, 17, yPos + 1);
+                    doc.setTextColor(30, 58, 138);
+                    doc.text(test.test, 18, yPos + 1.5);
                     doc.setTextColor(0, 0, 0);
-                    doc.setFont(undefined, 'normal');
-                    doc.setFontSize(8.5);
-                    yPos += 9;
+                    yPos += 12;
                     return;
                 }
 
-                let result = testResult.result || '-';
-
-                // Auto add unit if specification has unit
-                const unit = extractUnit(testResult.specification);
-                if (unit && !isNaN(result) && !result.includes(unit)) {
-                    result = result + " " + unit;
-                }
-
-                // Split long text to fit columns
-                const testLines = doc.splitTextToSize(testResult.test, 56);
-                const specLines = doc.splitTextToSize(testResult.specification, 78);
-                const resultLines = doc.splitTextToSize(result, 38);
-
-                // Draw alternating row background
-                const maxLines = Math.max(testLines.length, specLines.length, resultLines.length);
-                const rowHeight = maxLines * 4.5 + 2;
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                const tLines = doc.splitTextToSize(test.test, 55);
+                const sLines = doc.splitTextToSize(test.specification, 75);
+                const rValue = test.result || '-';
+                const rLines = doc.splitTextToSize(rValue, 35);
+                const mLines = Math.max(tLines.length, sLines.length, rLines.length);
+                const rH = mLines * 5 + 2;
 
                 if (testIndex % 2 === 0) {
-                    doc.setFillColor(250, 250, 250);
-                    doc.rect(15, yPos - 3, 180, rowHeight, 'F');
+                    doc.setFillColor(252, 252, 252);
+                    doc.rect(15, yPos - 4, 180, rH, 'F');
                 }
 
-                // Draw cell content
-                doc.text(testLines, 17, yPos);
-                doc.text(specLines, 75, yPos);
-                doc.text(resultLines, 155, yPos);
-
-                yPos += rowHeight;
+                doc.text(tLines, 18, yPos);
+                doc.text(sLines, 75, yPos);
+                doc.text(rLines, 158, yPos);
+                yPos += rH;
                 testIndex++;
             });
 
-            // Footer section
-            if (yPos > 235) {
-                addPageNumber(doc, pageNumber, totalPages);
+            // Final Signature section
+            if (yPos > 210) {
+                addPageNumber(pageNumber);
                 doc.addPage();
-                addWatermark();
-                drawHeader(false);
+                drawHeader();
                 pageNumber++;
-                yPos = 48;
-            } else {
-                yPos += 10;
-            }
+                yPos = 50;
+            } else { yPos += 20; }
 
-            // Add border for footer
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.3);
-            doc.line(15, yPos - 5, 195, yPos - 5);
-
-            doc.setFontSize(8);
-            doc.setFont(undefined, 'italic');
-            doc.setTextColor(100, 100, 100);
-            doc.text('This certificate is issued by the Quality Control Department', 15, yPos + 3);
-            yPos += 6;
-            doc.text('Cognizant Chemical Pvt. Ltd.', 15, yPos);
-            yPos += 5;
-            doc.setFont(undefined, 'normal');
-            doc.text('Authorized Signatory', 15, yPos);
-            yPos += 8;
+            doc.setFontSize(10);
             doc.setFont(undefined, 'bold');
-            doc.text('_________________________', 15, yPos);
+            doc.text('Analyzed By', 20, yPos);
+            doc.text('Approved By', 150, yPos);
+            yPos += 25;
+            doc.line(20, yPos, 75, yPos);
+            doc.line(140, yPos, 195, yPos);
             yPos += 5;
+            doc.setFontSize(8);
             doc.setFont(undefined, 'normal');
-            doc.setFontSize(7);
-            doc.text('Quality Control Manager', 15, yPos);
+            doc.text('Name / Signature', 20, yPos);
+            doc.text('Name / Signature', 140, yPos);
 
-            // Add page number to last page
-            addPageNumber(doc, pageNumber, totalPages);
+            yPos += 15;
+            doc.setDrawColor(220, 220, 220);
+            doc.line(15, yPos, 195, yPos);
+            yPos += 5;
+            doc.setFont(undefined, 'italic');
+            doc.setTextColor(120, 120, 120);
+            doc.text("This is a computer generated report, official validation requires signatures/stamps.", 105, yPos, { align: 'center' });
+            yPos += 4;
+            doc.setFont(undefined, 'bold');
+            doc.text('Cognizant Chemical Pvt. Ltd. | Quality Control Department', 105, yPos, { align: 'center' });
 
-            // Convert to blob
-            const pdfBlob = doc.output('blob');
-            return pdfBlob;
+            addPageNumber(pageNumber);
+            return doc.output('blob');
         }
 
         function formatDateForPDF(dateString) {
