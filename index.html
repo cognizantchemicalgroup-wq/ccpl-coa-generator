@@ -2739,16 +2739,17 @@
         doc.setFont(undefined, 'bold');
         doc.setTextColor(79, 70, 229); // Indigo
 
-        const productNameText = (currentProductData.productName || currentProductData.name || 'COA Report').toUpperCase();
+        const rawProductName = currentProductData.productName || currentProductData.name || 'COA Report';
+        const productNameText = rawProductName.split('-')[0].trim().toUpperCase();
         doc.setFontSize(14);
         const productNameLines = doc.splitTextToSize(productNameText, 140);
         doc.text(productNameLines, 15, 15);
 
         let headerYPos = 15 + (productNameLines.length * 6);
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
         doc.setTextColor(110, 110, 110);
-        doc.text(`${currentTestType.replace('-', ' ').toUpperCase()} TEST REPORT`, 15, headerYPos);
+        doc.text('Certificate of Analysis', 15, headerYPos);
 
         doc.setLineWidth(0.5);
         doc.setDrawColor(102, 126, 234);
@@ -2763,268 +2764,444 @@
 
       // Calculate total pages (simple estimate based on 255mm height)
       let totalPages = 1;
-        let testY = 48 + (currentTestType !== 'raw-material' ? 6 : 0) + 25; // Header + Product Info + Table Header
-        currentProductData.tests.forEach((test, idx) => {
-          const testLines = doc.splitTextToSize(test.test, 56);
-          const specLines = doc.splitTextToSize(test.specification, 78);
-          const input = document.getElementById('result_' + idx);
-          const res = input ? (input.value || '-') : '-';
-          const unit = extractUnit(test.specification);
-          const resFull = (unit && !isNaN(res) && !res.includes(unit)) ? res + " " + unit : res;
-          const resultLines = doc.splitTextToSize(resFull, 38);
-          const maxL = Math.max(testLines.length, specLines.length, resultLines.length);
-          const h = (test.type === 'header' ? 9 : (maxL * 4.5 + 2));
-          if (testY + h > 255) {
-            totalPages++;
-            testY = 48 + h;
-          } else {
-            testY += h;
-          }
-        });
-        if (testY > 235) totalPages++; // space for signatures
-
-
-
-
-        // Certificate of Analysis title
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text('Certificate of Analysis', 15, 38);
-
-        // Product information section
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
-        let yPos = 48;
-
-        // Only show Product Code for Finish Goods
-        if (currentTestType !== 'raw-material') {
-          doc.setFont(undefined, 'bold');
-          doc.text('Product Code:', 15, yPos);
-          doc.setFont(undefined, 'normal');
-          doc.text(currentProductData.code, 65, yPos);
-          yPos += 6;
+      let testY = 48 + (currentTestType !== 'raw-material' ? 6 : 0) + 25; // Header + Product Info + Table Header
+      currentProductData.tests.forEach((test, idx) => {
+        const testLines = doc.splitTextToSize(test.test, 56);
+        const specLines = doc.splitTextToSize(test.specification, 78);
+        const input = document.getElementById('result_' + idx);
+        const res = input ? (input.value || '-') : '-';
+        const unit = extractUnit(test.specification);
+        const resFull = (unit && !isNaN(res) && !res.includes(unit)) ? res + " " + unit : res;
+        const resultLines = doc.splitTextToSize(resFull, 38);
+        const maxL = Math.max(testLines.length, specLines.length, resultLines.length);
+        const h = (test.type === 'header' ? 9 : (maxL * 4.5 + 2));
+        if (testY + h > 255) {
+          totalPages++;
+          testY = 48 + h;
+        } else {
+          testY += h;
         }
+      });
+      if (testY > 235) totalPages++; // space for signatures
 
-        doc.setFont(undefined, 'bold');
-        doc.text('Product Name:', 15, yPos);
-        doc.setFont(undefined, 'normal');
-        const productNameText = currentProductData.productName || currentProductData.name;
-        const productNameLines = doc.splitTextToSize(productNameText, 125);
-        doc.text(productNameLines, 65, yPos);
-        yPos += productNameLines.length * 5 + 1;
 
+
+
+      // Certificate of Analysis title
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('Certificate of Analysis', 15, 38);
+
+      // Product information section
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      let yPos = 48;
+
+      // Only show Product Code for Finish Goods
+      if (currentTestType !== 'raw-material') {
         doc.setFont(undefined, 'bold');
-        doc.text('Batch No.:', 15, yPos);
+        doc.text('Product Code:', 15, yPos);
         doc.setFont(undefined, 'normal');
-        doc.text(document.getElementById('displayBatchNo').textContent, 65, yPos);
+        doc.text(currentProductData.code, 65, yPos);
         yPos += 6;
+      }
 
-        doc.setFont(undefined, 'bold');
-        doc.text('Manufacturing Date:', 15, yPos);
-        doc.setFont(undefined, 'normal');
-        doc.text(document.getElementById('displayMfgDate').textContent, 65, yPos);
-        yPos += 6;
+      doc.setFont(undefined, 'bold');
+      doc.text('Product Name:', 15, yPos);
+      doc.setFont(undefined, 'normal');
+      const rawProdName = currentProductData.productName || currentProductData.name || '';
+      const productNameText = rawProdName.split('-')[0].trim();
+      const productNameLines = doc.splitTextToSize(productNameText, 125);
+      doc.text(productNameLines, 65, yPos);
+      yPos += productNameLines.length * 5 + 1;
 
-        doc.setFont(undefined, 'bold');
-        doc.text('Expiry Date:', 15, yPos);
-        doc.setFont(undefined, 'normal');
-        doc.text(document.getElementById('displayExpiryDate').textContent, 65, yPos);
-        yPos += 6;
+      doc.setFont(undefined, 'bold');
+      doc.text('Batch No.:', 15, yPos);
+      doc.setFont(undefined, 'normal');
+      doc.text(document.getElementById('displayBatchNo').textContent, 65, yPos);
+      yPos += 6;
 
-        // Test results table header
-        yPos += 8;
-        doc.setFillColor(240, 240, 240);
-        doc.rect(15, yPos - 5, 180, 8, 'F');
+      doc.setFont(undefined, 'bold');
+      doc.text('Manufacturing Date:', 15, yPos);
+      doc.setFont(undefined, 'normal');
+      doc.text(document.getElementById('displayMfgDate').textContent, 65, yPos);
+      yPos += 6;
 
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'bold');
-        doc.text('Test Parameter', 17, yPos);
-        doc.text('Specification', 75, yPos);
-        doc.text('Result', 155, yPos);
+      doc.setFont(undefined, 'bold');
+      doc.text('Expiry Date:', 15, yPos);
+      doc.setFont(undefined, 'normal');
+      doc.text(document.getElementById('displayExpiryDate').textContent, 65, yPos);
+      yPos += 6;
 
-        yPos += 2;
-        doc.setLineWidth(0.3);
-        doc.line(15, yPos, 195, yPos);
-        doc.setLineWidth(0.1);
+      // Test results table header
+      yPos += 8;
+      doc.setFillColor(240, 240, 240);
+      doc.rect(15, yPos - 5, 180, 8, 'F');
 
-        doc.setFont(undefined, 'normal');
-        yPos += 6;
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'bold');
+      doc.text('Test Parameter', 17, yPos);
+      doc.text('Specification', 75, yPos);
+      doc.text('Result', 155, yPos);
 
-        // Test results rows
-        currentProductData.tests.forEach((test, index) => {
-          // Check if we need a new page (leave space for footer and page number)
-          if (yPos > 255) {
-            addPageNumber(pageNumber, totalPages);
-            doc.addPage();
-            addWatermark();
-            drawHeader();
-            pageNumber++;
-            yPos = 48;
+      yPos += 2;
+      doc.setLineWidth(0.3);
+      doc.line(15, yPos, 195, yPos);
+      doc.setLineWidth(0.1);
 
-            // Redraw table header on new page
-            doc.setFillColor(240, 240, 240);
-            doc.rect(15, yPos - 5, 180, 8, 'F');
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'bold');
-            doc.text('Test Parameter', 17, yPos);
-            doc.text('Specification', 75, yPos);
-            doc.text('Result', 155, yPos);
-            yPos += 2;
-            doc.setLineWidth(0.3);
-            doc.line(15, yPos, 195, yPos);
-            doc.setLineWidth(0.1);
-            doc.setFont(undefined, 'normal');
-            yPos += 6;
-          }
+      doc.setFont(undefined, 'normal');
+      yPos += 6;
 
-          doc.setFontSize(8.5);
-
-          // Handle section headers
-          if (test.type === 'header') {
-            yPos += 2;
-            doc.setFontSize(9.5);
-            doc.setFont(undefined, 'bold');
-            doc.setFillColor(102, 126, 234);
-            doc.rect(15, yPos - 4, 180, 7, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.text(test.test, 17, yPos + 1);
-            doc.setTextColor(0, 0, 0);
-            doc.setFont(undefined, 'normal');
-            doc.setFontSize(8.5);
-            yPos += 9;
-            return;
-          }
-
-          const input = document.getElementById('result_' + index);
-          let result = input ? (input.value || '-') : '-';
-
-          // Auto add unit if specification has unit
-          const unit = extractUnit(test.specification);
-
-          // Add unit ONLY if:
-          // - result is a number 
-          // - result does not already contain the unit
-          if (unit && !isNaN(result) && !result.includes(unit)) {
-            result = result + " " + unit;
-          }
-
-
-          // Split long text to fit columns
-          const testLines = doc.splitTextToSize(test.test, 56);
-          const specLines = doc.splitTextToSize(test.specification, 78);
-          const resultLines = doc.splitTextToSize(result, 38);
-
-          // Draw alternating row background
-          const maxLines = Math.max(testLines.length, specLines.length, resultLines.length);
-          const rowHeight = maxLines * 4.5 + 2;
-
-          if (index % 2 === 0) {
-            doc.setFillColor(250, 250, 250);
-            doc.rect(15, yPos - 3, 180, rowHeight, 'F');
-          }
-
-          // Draw cell content
-          doc.text(testLines, 17, yPos);
-          doc.text(specLines, 75, yPos);
-          doc.text(resultLines, 155, yPos);
-
-          yPos += rowHeight;
-        });
-
-        // Footer section
-        // Footer section
-        if (yPos > 230) {
+      // Test results rows
+      currentProductData.tests.forEach((test, index) => {
+        // Check if we need a new page (leave space for footer and page number)
+        if (yPos > 255) {
           addPageNumber(pageNumber, totalPages);
           doc.addPage();
           addWatermark();
           drawHeader();
           pageNumber++;
           yPos = 48;
+
+          // Redraw table header on new page
+          doc.setFillColor(240, 240, 240);
+          doc.rect(15, yPos - 5, 180, 8, 'F');
+          doc.setFontSize(9);
+          doc.setFont(undefined, 'bold');
+          doc.text('Test Parameter', 17, yPos);
+          doc.text('Specification', 75, yPos);
+          doc.text('Result', 155, yPos);
+          yPos += 2;
+          doc.setLineWidth(0.3);
+          doc.line(15, yPos, 195, yPos);
+          doc.setLineWidth(0.1);
+          doc.setFont(undefined, 'normal');
+          yPos += 6;
         }
 
-        // Signature Section
-        yPos += 10;
-        doc.setLineWidth(0.2);
-        doc.setDrawColor(200, 200, 200);
+        doc.setFontSize(8.5);
 
-        // Analyzed By (Left)
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
-        doc.text('Analyzed By', 15, yPos);
-        yPos += 15;
-        doc.line(15, yPos, 70, yPos);
-        yPos += 5;
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
-        doc.text('Name / Signature', 15, yPos);
+        // Handle section headers
+        if (test.type === 'header') {
+          yPos += 2;
+          doc.setFontSize(9.5);
+          doc.setFont(undefined, 'bold');
+          doc.setFillColor(102, 126, 234);
+          doc.rect(15, yPos - 4, 180, 7, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.text(test.test, 17, yPos + 1);
+          doc.setTextColor(0, 0, 0);
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(8.5);
+          yPos += 9;
+          return;
+        }
 
-        // Approved By (Right)
-        let signY = yPos - 20;
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'bold');
-        doc.text('Approved By', 140, signY);
-        signY += 15;
-        doc.line(140, signY, 195, signY);
-        signY += 5;
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'normal');
-        doc.text('Name / Signature', 140, signY);
+        const input = document.getElementById('result_' + index);
+        let result = input ? (input.value || '-') : '-';
 
-        yPos = Math.max(yPos, signY) + 12;
+        // Auto add unit if specification has unit
+        const unit = extractUnit(test.specification);
 
-        // Footer border
-        doc.setDrawColor(79, 70, 229);
-        doc.setLineWidth(0.5);
-        doc.line(15, yPos - 5, 195, yPos - 5);
+        // Add unit ONLY if:
+        // - result is a number 
+        // - result does not already contain the unit
+        if (unit && !isNaN(result) && !result.includes(unit)) {
+          result = result + " " + unit;
+        }
 
-        doc.setFontSize(9);
-        doc.setFont(undefined, 'bold');
-        doc.setTextColor(79, 70, 229);
-        doc.text('COGNIZANT CHEMICAL PRIVATE LIMITED', 15, yPos);
 
-        doc.setFont(undefined, 'normal');
-        doc.setFontSize(7.5);
-        doc.setTextColor(80, 80, 80);
-        yPos += 4;
-        doc.text('Regd. Off: B-120, Dama Office Premises, Smed Market, Kalamboli, Navi Mumbai-410218', 15, yPos);
-        yPos += 3.5;
-        doc.text('Mobile: 9766652255 / 9920272227  |  Email: admin@cognizantchemical.com', 15, yPos);
-        yPos += 3.5;
-        doc.text('Website: www.cognizantchemical.com', 15, yPos);
+        // Split long text to fit columns
+        const testLines = doc.splitTextToSize(test.test, 56);
+        const specLines = doc.splitTextToSize(test.specification, 78);
+        const resultLines = doc.splitTextToSize(result, 38);
 
-        // Add page number to last page
+        // Draw alternating row background
+        const maxLines = Math.max(testLines.length, specLines.length, resultLines.length);
+        const rowHeight = maxLines * 4.5 + 2;
+
+        if (index % 2 === 0) {
+          doc.setFillColor(250, 250, 250);
+          doc.rect(15, yPos - 3, 180, rowHeight, 'F');
+        }
+
+        // Draw cell content
+        doc.text(testLines, 17, yPos);
+        doc.text(specLines, 75, yPos);
+        doc.text(resultLines, 155, yPos);
+
+        yPos += rowHeight;
+      });
+
+      // Footer section
+      // Footer section
+      if (yPos > 230) {
         addPageNumber(pageNumber, totalPages);
-
-        // Generate filename
-        const batchNo = document.getElementById('displayBatchNo').textContent;
-        const productCode = currentTestType === 'raw-material' ?
-          currentProductData.name.replace(/[^a-zA-Z0-9]/g, '_') :
-          currentProductData.code;
-        const fileName = `COA_${productCode}_${batchNo}.pdf`;
-
-        doc.save(fileName);
+        doc.addPage();
+        addWatermark();
+        drawHeader();
+        pageNumber++;
+        yPos = 48;
       }
 
-      // Save data to Firebase
-      async function saveToFirebase() {
-        console.log('=== saveToFirebase called ===');
+      // Signature Section
+      yPos += 10;
+      doc.setLineWidth(0.2);
+      doc.setDrawColor(200, 200, 200);
 
-        // Check if Firebase is initialized
-        if (typeof firebase === 'undefined' || !firebase.firestore) {
-          alert('Firebase is not loaded. Please check your Firebase configuration.');
-          console.error('Firebase not initialized');
-          return;
+      // Analyzed By (Left)
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.text('Analyzed By', 15, yPos);
+      yPos += 15;
+      doc.line(15, yPos, 70, yPos);
+      yPos += 5;
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.text('Stamp / Date & Sign', 15, yPos);
+
+      // Approved By (Right)
+      let signY = yPos - 20;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.text('Approved By', 140, signY);
+      signY += 15;
+      doc.line(140, signY, 195, signY);
+      signY += 5;
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.text('Stamp / Date & Sign', 140, signY);
+
+      yPos = Math.max(yPos, signY) + 12;
+
+      // Footer border
+      doc.setDrawColor(79, 70, 229);
+      doc.setLineWidth(0.5);
+      doc.line(15, yPos - 5, 195, yPos - 5);
+
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'bold');
+      doc.setTextColor(79, 70, 229);
+      doc.text('COGNIZANT CHEMICAL PRIVATE LIMITED', 15, yPos);
+
+      doc.setFont(undefined, 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(80, 80, 80);
+      yPos += 4;
+      doc.text('Regd. Off: B-120, Dama Office Premises, Smed Market, Kalamboli, Navi Mumbai-410218', 15, yPos);
+      yPos += 3.5;
+      doc.text('Mobile: 9766652255 / 9920272227  |  Email: admin@cognizantchemical.com', 15, yPos);
+      yPos += 3.5;
+      doc.text('Website: www.cognizantchemical.com', 15, yPos);
+
+      // Add page number to last page
+      addPageNumber(pageNumber, totalPages);
+
+      // Generate filename
+      const batchNo = document.getElementById('displayBatchNo').textContent;
+      const productCode = currentTestType === 'raw-material' ?
+        currentProductData.name.replace(/[^a-zA-Z0-9]/g, '_') :
+        currentProductData.code;
+      const fileName = `COA_${productCode}_${batchNo}.pdf`;
+
+      doc.save(fileName);
+    }
+
+    // Save data to Firebase
+    async function saveToFirebase() {
+      console.log('=== saveToFirebase called ===');
+
+      // Check if Firebase is initialized
+      if (typeof firebase === 'undefined' || !firebase.firestore) {
+        alert('Firebase is not loaded. Please check your Firebase configuration.');
+        console.error('Firebase not initialized');
+        return;
+      }
+      console.log('✓ Firebase check passed');
+
+      // Get database reference
+      const db = getDb();
+      if (!db) {
+        alert('Database connection not available. Please refresh the page and check Firebase configuration.');
+        console.error('Database not available. window.db:', window.db);
+        return;
+      }
+      console.log('✓ Database check passed');
+
+      // Check if user is logged in
+      const user = sessionStorage.getItem('ccpl_user');
+      if (!user) {
+        alert('Please login first.');
+        window.location.href = 'login.html';
+        return;
+      }
+      console.log('✓ User check passed');
+
+      // Check if currentProductData is available
+      if (!currentProductData) {
+        alert('No product selected. Please go back and select a product.');
+        console.error('currentProductData is null');
+        return;
+      }
+      console.log('✓ Product data check passed:', currentProductData.code);
+
+      // Check compliance
+      const complianceCheck = checkOverallCompliance();
+      console.log('Compliance check result:', complianceCheck);
+      if (!complianceCheck) {
+        alert('Cannot save: Please correct all errors before saving.\n\nMake sure all test fields are filled correctly.');
+        return;
+      }
+      console.log('✓ Compliance check passed');
+
+      try {
+        console.log('Starting save to Firebase...');
+
+        // Collect all form data
+        const batchNo = document.getElementById('batchNo').value;
+        const mfgDate = document.getElementById('mfgDate').value;
+        const expiryDate = document.getElementById('expiryDate').value;
+
+        // Collect test results
+        const testResults = [];
+        currentProductData.tests.forEach((test, index) => {
+          if (test.type === 'header') {
+            testResults.push({
+              test: test.test,
+              specification: test.specification,
+              type: 'header',
+              result: ''
+            });
+          } else {
+            const input = document.getElementById('result_' + index);
+            if (input) {
+              testResults.push({
+                test: test.test,
+                specification: test.specification,
+                type: test.type,
+                result: input.value.trim(),
+                range: test.range || null,
+                unit: test.unit || '',
+                required: test.required || null
+              });
+            }
+          }
+        });
+
+        // Get user info
+        const user = JSON.parse(sessionStorage.getItem('ccpl_user'));
+
+        // Prepare document data
+        const documentData = {
+          productCode: currentProductData.code,
+          productName: currentProductData.productName || currentProductData.name,
+          chemicalName: currentProductData.chemicalName || currentProductData.name,
+          category: currentTestType === 'raw-material' ? 'Raw Material' : 'Finish Goods',
+          batchNo: batchNo,
+          mfgDate: mfgDate,
+          expiryDate: expiryDate,
+          testType: currentTestType,
+          productData: currentProductData,
+          testResults: testResults,
+          createdBy: user.name,
+          userId: user.id, // Store user ID for filtering
+          updatedAt: firebase.firestore.Timestamp.now()
+        };
+
+        // Save or update document
+        if (currentDocumentId) {
+          // Update existing document (don't change createdAt or userId)
+          delete documentData.createdAt;
+          delete documentData.userId; // Preserve original userId, don't allow changing ownership
+          console.log('Updating document:', currentDocumentId);
+
+          // Verify user owns this document before updating
+          const docRef = db.collection('coa_documents').doc(currentDocumentId);
+          const existingDoc = await docRef.get();
+          if (existingDoc.exists) {
+            const existingData = existingDoc.data();
+            if (existingData.userId !== user.id) {
+              alert('You do not have permission to update this document. You can only update your own documents.');
+              return;
+            }
+          }
+
+          await docRef.update(documentData);
+          alert('COA generated successfully!');
+        } else {
+          // Create new document
+          documentData.createdAt = firebase.firestore.Timestamp.now();
+          console.log('Creating new document...');
+          const docRef = await db.collection('coa_documents').add(documentData);
+          currentDocumentId = docRef.id;
+          console.log('Document saved with ID:', docRef.id);
+          alert('COA generated successfully!');
         }
-        console.log('✓ Firebase check passed');
 
-        // Get database reference
+        // Update button text
+        const saveBtn = document.getElementById('saveBtn');
+        if (saveBtn) {
+          saveBtn.textContent = 'Update & Download PDF';
+          saveBtn.onclick = saveAndDownload;
+          saveBtn.disabled = false;
+        }
+
+      } catch (error) {
+        console.error('=== ERROR in saveToFirebase ===');
+        console.error('Error saving to Firebase:', error);
+        console.error('Error details:', {
+          code: error.code,
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        });
+
+        // Check for specific error types
+        let errorMessage = 'Error saving document: ' + error.message;
+
+        if (error.code === 'permission-denied') {
+          if (error.message.includes('Cloud Firestore API has not been used')) {
+            errorMessage = 'Firestore API is not enabled!\n\n' +
+              'Please enable the Cloud Firestore API:\n' +
+              '1. Visit: https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=ccpl-coa-generator\n' +
+              '2. Click "Enable"\n' +
+              '3. Wait a few minutes for it to activate\n' +
+              '4. Refresh this page and try again';
+          } else {
+            errorMessage = 'Permission Denied!\n\n' +
+              'Your Firestore security rules are blocking the save operation.\n\n' +
+              'QUICK FIX:\n' +
+              '1. Go to: https://console.firebase.google.com/project/ccpl-coa-generator/firestore/rules\n' +
+              '2. Replace ALL rules with this code:\n\n' +
+              'rules_version = \'2\';\n' +
+              'service cloud.firestore {\n' +
+              '  match /databases/{database}/documents {\n' +
+              '    match /coa_documents/{document} {\n' +
+              '      allow read, write: if true;\n' +
+              '    }\n' +
+              '  }\n' +
+              '}\n\n' +
+              '3. Click "Publish" button\n' +
+              '4. Wait 10 seconds, then refresh this page\n' +
+              '5. Try saving again';
+          }
+        } else if (error.code === 'unavailable') {
+          errorMessage = 'Firestore is unavailable!\n\n' +
+            'Please check your internet connection and try again.';
+        }
+
+        alert(errorMessage);
+      }
+    }
+
+    // Load document for editing
+    async function loadDocumentForEditing(docId) {
+      try {
         const db = getDb();
         if (!db) {
-          alert('Database connection not available. Please refresh the page and check Firebase configuration.');
-          console.error('Database not available. window.db:', window.db);
+          alert('Database connection not available. Please refresh the page.');
           return;
         }
-        console.log('✓ Database check passed');
 
         // Check if user is logged in
         const user = sessionStorage.getItem('ccpl_user');
@@ -3033,318 +3210,145 @@
           window.location.href = 'login.html';
           return;
         }
-        console.log('✓ User check passed');
+        const userData = JSON.parse(user);
 
-        // Check if currentProductData is available
-        if (!currentProductData) {
-          alert('No product selected. Please go back and select a product.');
-          console.error('currentProductData is null');
+        const docRef = db.collection('coa_documents').doc(docId);
+        const doc = await docRef.get();
+
+        if (!doc.exists) {
+          alert('Document not found!');
           return;
         }
-        console.log('✓ Product data check passed:', currentProductData.code);
 
-        // Check compliance
-        const complianceCheck = checkOverallCompliance();
-        console.log('Compliance check result:', complianceCheck);
-        if (!complianceCheck) {
-          alert('Cannot save: Please correct all errors before saving.\n\nMake sure all test fields are filled correctly.');
+        const data = doc.data();
+
+        // Check if user owns this document
+        if (data.userId !== userData.id) {
+          alert('You do not have permission to edit this document. You can only edit your own documents.');
+          window.location.href = 'dashboard.html';
           return;
         }
-        console.log('✓ Compliance check passed');
 
-        try {
-          console.log('Starting save to Firebase...');
+        currentDocumentId = docId;
 
-          // Collect all form data
-          const batchNo = document.getElementById('batchNo').value;
-          const mfgDate = document.getElementById('mfgDate').value;
-          const expiryDate = document.getElementById('expiryDate').value;
+        // Set test type
+        currentTestType = data.testType;
+        selectTestType(data.testType);
 
-          // Collect test results
-          const testResults = [];
-          currentProductData.tests.forEach((test, index) => {
-            if (test.type === 'header') {
-              testResults.push({
-                test: test.test,
-                specification: test.specification,
-                type: 'header',
-                result: ''
-              });
+        // Wait for products to load
+        const waitForProducts = setInterval(() => {
+          if ((data.testType === 'raw-material' && rmProducts.length > 0) ||
+            (data.testType === 'finish-goods' && fgProducts.length > 0)) {
+            clearInterval(waitForProducts);
+
+            // Set product
+            if (data.testType === 'raw-material') {
+              const product = rmProducts.find(p => p.code === data.productCode);
+              if (product) {
+                currentProductData = product;
+                document.getElementById('rmProductSelect').value = data.productCode;
+                handleRMSelection();
+              }
             } else {
-              const input = document.getElementById('result_' + index);
-              if (input) {
-                testResults.push({
-                  test: test.test,
-                  specification: test.specification,
-                  type: test.type,
-                  result: input.value.trim(),
-                  range: test.range || null,
-                  unit: test.unit || '',
-                  required: test.required || null
+              // For finish goods, we need to find and select the product
+              const product = fgProducts.find(p => p.code === data.productCode);
+              if (product) {
+                currentProductData = product;
+                document.getElementById('fgProductSearch').value = product.productName || product.name;
+              }
+            }
+
+            // Set form fields
+            document.getElementById('batchNo').value = data.batchNo;
+            document.getElementById('mfgDate').value = data.mfgDate;
+            document.getElementById('expiryDate').value = data.expiryDate;
+
+            // Proceed to data entry
+            proceedToDataEntry();
+
+            // Wait for test table to be generated, then fill in results
+            setTimeout(() => {
+              if (data.testResults) {
+                data.testResults.forEach((testResult, index) => {
+                  const input = document.getElementById('result_' + index);
+                  if (input && testResult.result) {
+                    input.value = testResult.result;
+                    // Trigger validation
+                    input.dispatchEvent(new Event('input'));
+                  }
                 });
               }
-            }
-          });
 
-          // Get user info
-          const user = JSON.parse(sessionStorage.getItem('ccpl_user'));
-
-          // Prepare document data
-          const documentData = {
-            productCode: currentProductData.code,
-            productName: currentProductData.productName || currentProductData.name,
-            chemicalName: currentProductData.chemicalName || currentProductData.name,
-            category: currentTestType === 'raw-material' ? 'Raw Material' : 'Finish Goods',
-            batchNo: batchNo,
-            mfgDate: mfgDate,
-            expiryDate: expiryDate,
-            testType: currentTestType,
-            productData: currentProductData,
-            testResults: testResults,
-            createdBy: user.name,
-            userId: user.id, // Store user ID for filtering
-            updatedAt: firebase.firestore.Timestamp.now()
-          };
-
-          // Save or update document
-          if (currentDocumentId) {
-            // Update existing document (don't change createdAt or userId)
-            delete documentData.createdAt;
-            delete documentData.userId; // Preserve original userId, don't allow changing ownership
-            console.log('Updating document:', currentDocumentId);
-
-            // Verify user owns this document before updating
-            const docRef = db.collection('coa_documents').doc(currentDocumentId);
-            const existingDoc = await docRef.get();
-            if (existingDoc.exists) {
-              const existingData = existingDoc.data();
-              if (existingData.userId !== user.id) {
-                alert('You do not have permission to update this document. You can only update your own documents.');
-                return;
+              // Update button text
+              const saveBtn = document.getElementById('saveBtn');
+              if (saveBtn) {
+                saveBtn.textContent = 'Update & Download PDF';
               }
-            }
-
-            await docRef.update(documentData);
-            alert('COA generated successfully!');
-          } else {
-            // Create new document
-            documentData.createdAt = firebase.firestore.Timestamp.now();
-            console.log('Creating new document...');
-            const docRef = await db.collection('coa_documents').add(documentData);
-            currentDocumentId = docRef.id;
-            console.log('Document saved with ID:', docRef.id);
-            alert('COA generated successfully!');
+            }, 500);
           }
+        }, 100);
 
-          // Update button text
-          const saveBtn = document.getElementById('saveBtn');
-          if (saveBtn) {
-            saveBtn.textContent = 'Update & Download PDF';
-            saveBtn.onclick = saveAndDownload;
-            saveBtn.disabled = false;
-          }
+        // Timeout after 5 seconds
+        setTimeout(() => {
+          clearInterval(waitForProducts);
+        }, 5000);
 
-        } catch (error) {
-          console.error('=== ERROR in saveToFirebase ===');
-          console.error('Error saving to Firebase:', error);
-          console.error('Error details:', {
-            code: error.code,
-            message: error.message,
-            name: error.name,
-            stack: error.stack
-          });
-
-          // Check for specific error types
-          let errorMessage = 'Error saving document: ' + error.message;
-
-          if (error.code === 'permission-denied') {
-            if (error.message.includes('Cloud Firestore API has not been used')) {
-              errorMessage = 'Firestore API is not enabled!\n\n' +
-                'Please enable the Cloud Firestore API:\n' +
-                '1. Visit: https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=ccpl-coa-generator\n' +
-                '2. Click "Enable"\n' +
-                '3. Wait a few minutes for it to activate\n' +
-                '4. Refresh this page and try again';
-            } else {
-              errorMessage = 'Permission Denied!\n\n' +
-                'Your Firestore security rules are blocking the save operation.\n\n' +
-                'QUICK FIX:\n' +
-                '1. Go to: https://console.firebase.google.com/project/ccpl-coa-generator/firestore/rules\n' +
-                '2. Replace ALL rules with this code:\n\n' +
-                'rules_version = \'2\';\n' +
-                'service cloud.firestore {\n' +
-                '  match /databases/{database}/documents {\n' +
-                '    match /coa_documents/{document} {\n' +
-                '      allow read, write: if true;\n' +
-                '    }\n' +
-                '  }\n' +
-                '}\n\n' +
-                '3. Click "Publish" button\n' +
-                '4. Wait 10 seconds, then refresh this page\n' +
-                '5. Try saving again';
-            }
-          } else if (error.code === 'unavailable') {
-            errorMessage = 'Firestore is unavailable!\n\n' +
-              'Please check your internet connection and try again.';
-          }
-
-          alert(errorMessage);
-        }
+      } catch (error) {
+        console.error('Error loading document:', error);
+        alert('Error loading document: ' + error.message);
       }
+    }
 
-      // Load document for editing
-      async function loadDocumentForEditing(docId) {
-        try {
-          const db = getDb();
-          if (!db) {
-            alert('Database connection not available. Please refresh the page.');
-            return;
-          }
-
-          // Check if user is logged in
-          const user = sessionStorage.getItem('ccpl_user');
-          if (!user) {
-            alert('Please login first.');
-            window.location.href = 'login.html';
-            return;
-          }
-          const userData = JSON.parse(user);
-
-          const docRef = db.collection('coa_documents').doc(docId);
-          const doc = await docRef.get();
-
-          if (!doc.exists) {
-            alert('Document not found!');
-            return;
-          }
-
-          const data = doc.data();
-
-          // Check if user owns this document
-          if (data.userId !== userData.id) {
-            alert('You do not have permission to edit this document. You can only edit your own documents.');
-            window.location.href = 'dashboard.html';
-            return;
-          }
-
-          currentDocumentId = docId;
-
-          // Set test type
-          currentTestType = data.testType;
-          selectTestType(data.testType);
-
-          // Wait for products to load
-          const waitForProducts = setInterval(() => {
-            if ((data.testType === 'raw-material' && rmProducts.length > 0) ||
-              (data.testType === 'finish-goods' && fgProducts.length > 0)) {
-              clearInterval(waitForProducts);
-
-              // Set product
-              if (data.testType === 'raw-material') {
-                const product = rmProducts.find(p => p.code === data.productCode);
-                if (product) {
-                  currentProductData = product;
-                  document.getElementById('rmProductSelect').value = data.productCode;
-                  handleRMSelection();
-                }
-              } else {
-                // For finish goods, we need to find and select the product
-                const product = fgProducts.find(p => p.code === data.productCode);
-                if (product) {
-                  currentProductData = product;
-                  document.getElementById('fgProductSearch').value = product.productName || product.name;
-                }
-              }
-
-              // Set form fields
-              document.getElementById('batchNo').value = data.batchNo;
-              document.getElementById('mfgDate').value = data.mfgDate;
-              document.getElementById('expiryDate').value = data.expiryDate;
-
-              // Proceed to data entry
-              proceedToDataEntry();
-
-              // Wait for test table to be generated, then fill in results
-              setTimeout(() => {
-                if (data.testResults) {
-                  data.testResults.forEach((testResult, index) => {
-                    const input = document.getElementById('result_' + index);
-                    if (input && testResult.result) {
-                      input.value = testResult.result;
-                      // Trigger validation
-                      input.dispatchEvent(new Event('input'));
-                    }
-                  });
-                }
-
-                // Update button text
-                const saveBtn = document.getElementById('saveBtn');
-                if (saveBtn) {
-                  saveBtn.textContent = 'Update & Download PDF';
-                }
-              }, 500);
-            }
-          }, 100);
-
-          // Timeout after 5 seconds
-          setTimeout(() => {
-            clearInterval(waitForProducts);
-          }, 5000);
-
-        } catch (error) {
-          console.error('Error loading document:', error);
-          alert('Error loading document: ' + error.message);
-        }
+    function checkEditMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      if (editId) {
+        loadDocumentForEditing(editId);
       }
+    }
 
-      function checkEditMode() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const editId = urlParams.get('edit');
-        if (editId) {
-          loadDocumentForEditing(editId);
-        }
+    async function saveAndDownload() {
+      const saveBtn = document.getElementById('saveBtn');
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = 'Saving & Downloading...';
+      saveBtn.disabled = true;
+
+      try {
+        // 1. Save to Database (throws on failure — redirect will NOT happen)
+        await saveToFirebase();
+
+        // 2. Generate & trigger PDF download
+        generatePDF();
+
+        // 3. Brief pause so browser can initiate the file download,
+        //    then redirect to Saved Documents page
+        saveBtn.textContent = 'Redirecting...';
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 800);
+
+      } catch (e) {
+        console.error(e);
+        alert('An error occurred during save & download.');
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
       }
+    }
 
-      async function saveAndDownload() {
-        const saveBtn = document.getElementById('saveBtn');
-        const originalText = saveBtn.textContent;
-        saveBtn.textContent = 'Saving...';
-        saveBtn.disabled = true;
+    window.saveAndDownload = saveAndDownload;
+    window.saveToFirebase = saveToFirebase;
 
-        try {
-          // 1. Save to Database
-          await saveToFirebase();
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      loadProductData();
+      checkEditMode();
 
-          // 2. Generate PDF
-          generatePDF();
-
-          saveBtn.textContent = 'Updated & Downloaded';
-          setTimeout(() => {
-            saveBtn.textContent = originalText;
-            saveBtn.disabled = false;
-          }, 3000);
-        } catch (e) {
-          console.error(e);
-          alert('An error occurred during save & download.');
-          saveBtn.textContent = originalText;
-          saveBtn.disabled = false;
-        }
+      // Share logo with other pages
+      if (typeof logo !== 'undefined' && logo) {
+        localStorage.setItem('ccpl_logo', logo);
       }
-
-      window.saveAndDownload = saveAndDownload;
-      window.saveToFirebase = saveToFirebase;
-
-      // Initialize on page load
-      window.addEventListener('DOMContentLoaded', () => {
-        checkAuth();
-        loadProductData();
-        checkEditMode();
-
-        // Share logo with other pages
-        if (typeof logo !== 'undefined' && logo) {
-          localStorage.setItem('ccpl_logo', logo);
-        }
-      });
+    });
   </script>
 </body>
 

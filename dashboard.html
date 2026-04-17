@@ -12,6 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Flatpickr date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
         * {
             margin: 0;
@@ -248,13 +251,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .loading-text {
@@ -262,6 +260,136 @@
             font-size: 16px;
             font-weight: 600;
         }
+
+        /* ── Date Range Picker Modal ── */
+        .date-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        .date-modal-overlay.active { display: flex; }
+
+        .date-modal {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 36px 32px 28px;
+            width: 460px;
+            max-width: 95vw;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+            animation: dmSlideIn 0.22s ease;
+        }
+        @keyframes dmSlideIn {
+            from { opacity:0; transform: translateY(-18px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+
+        .date-modal h2 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        .date-modal .dm-subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        .dm-quick-btns {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .dm-quick-btn {
+            padding: 6px 14px;
+            border: 1.5px solid #667eea;
+            border-radius: 20px;
+            background: transparent;
+            color: #667eea;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dm-quick-btn:hover, .dm-quick-btn.active {
+            background: #667eea;
+            color: #fff;
+        }
+
+        .dm-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        .dm-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .dm-field input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2c3e50;
+            background: #fafafa;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .dm-field input:focus { outline: none; border-color: #667eea; background: #fff; }
+
+        .dm-range-label {
+            text-align: center;
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+            min-height: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .dm-btn-cancel {
+            padding: 10px 22px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: transparent;
+            color: #555;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dm-btn-cancel:hover { border-color: #aaa; color: #333; }
+        .dm-btn-export {
+            padding: 10px 26px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dm-btn-export:hover { opacity: 0.88; }
+        .dm-btn-export svg { width: 16px; height: 16px; }
 
         .modal {
             display: none;
@@ -347,7 +475,7 @@
         <div class="header">
             <h1>Saved Documents</h1>
             <div class="header-actions">
-                <button class="btn btn-secondary" onclick="exportToExcel()">Export to Excel</button>
+                <button class="btn btn-secondary" id="exportBtn" onclick="openDateRangePicker()">📅 Export to Excel</button>
                 <a href="index.html" class="btn btn-primary">New COA</a>
                 <button class="btn btn-danger" onclick="handleLogout()">Logout</button>
             </div>
@@ -406,6 +534,44 @@
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Exporting to Excel...</div>
+    </div>
+
+    <!-- Date Range Picker Modal -->
+    <div id="dateModalOverlay" class="date-modal-overlay">
+        <div class="date-modal">
+            <h2>📅 Export Date Range</h2>
+            <p class="dm-subtitle">Select a date range to filter records before exporting.</p>
+
+            <div class="dm-quick-btns">
+                <button class="dm-quick-btn" id="qToday"   onclick="applyQuick('today')">Today</button>
+                <button class="dm-quick-btn" id="qLast7"   onclick="applyQuick('last7')">Last 7 Days</button>
+                <button class="dm-quick-btn" id="qLast30"  onclick="applyQuick('last30')">Last 30 Days</button>
+                <button class="dm-quick-btn" id="qAllTime" onclick="applyQuick('all')">All Time</button>
+            </div>
+
+            <div class="dm-fields">
+                <div class="dm-field">
+                    <label>From Date</label>
+                    <input type="text" id="dmFromDate" placeholder="dd/mm/yyyy" readonly>
+                </div>
+                <div class="dm-field">
+                    <label>To Date</label>
+                    <input type="text" id="dmToDate" placeholder="dd/mm/yyyy" readonly>
+                </div>
+            </div>
+
+            <div class="dm-range-label" id="dmRangeLabel">No date range selected</div>
+
+            <div class="dm-actions">
+                <button class="dm-btn-cancel" onclick="closeDateModal()">Cancel</button>
+                <button class="dm-btn-export" onclick="runExport()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 15V3m0 12-4-4m4 4 4-4M3 21h18"/>
+                    </svg>
+                    Export Excel
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -807,14 +973,15 @@
                 doc.setTextColor(79, 70, 229); // Indigo
 
                 doc.setFontSize(14);
-                const productNameLines = doc.splitTextToSize(data.productName || data.chemicalName || 'COA Report', 140);
+                const rawProductName = data.productName || data.chemicalName || 'COA Report';
+                const productNameLines = doc.splitTextToSize(rawProductName.split('-')[0].trim().toUpperCase(), 140);
                 doc.text(productNameLines, 15, 15);
 
                 let headerYPos = 15 + (productNameLines.length * 6);
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
                 doc.setTextColor(100, 100, 100);
-                doc.text(`${(data.category || 'N/A').toUpperCase()} TEST REPORT`, 15, headerYPos);
+                doc.text('Certificate of Analysis', 15, headerYPos);
 
                 doc.setDrawColor(102, 126, 234);
                 doc.setLineWidth(0.5);
@@ -830,7 +997,7 @@
             doc.setFontSize(10);
 
             const info = [
-                { l: 'Product Name:', v: data.productName || data.chemicalName },
+                { l: 'Product Name:', v: (data.productName || data.chemicalName || '').split('-')[0].trim() },
                 { l: 'Batch No.:', v: data.batchNo || 'N/A' },
                 { l: 'Manufacturing Date:', v: formatDateForPDF(data.mfgDate) },
                 { l: 'Expiry Date:', v: formatDateForPDF(data.expiryDate) }
@@ -926,17 +1093,10 @@
             yPos += 5;
             doc.setFontSize(8);
             doc.setFont(undefined, 'normal');
-            doc.text('Name / Signature', 20, yPos);
-            doc.text('Name / Signature', 140, yPos);
+            doc.text('Stamp / Date & Sign', 20, yPos);
+            doc.text('Stamp / Date & Sign', 140, yPos);
 
-            yPos += 15;
-            doc.setDrawColor(220, 220, 220);
-            doc.line(15, yPos, 195, yPos);
-            yPos += 5;
-            doc.setFont(undefined, 'italic');
-            doc.setTextColor(120, 120, 120);
-            doc.text("This is a computer generated report, official validation requires signatures/stamps.", 105, yPos, { align: 'center' });
-            yPos += 4;
+            yPos += 8;
             doc.setFont(undefined, 'bold');
             doc.text('Cognizant Chemical Pvt. Ltd. | Quality Control Department', 105, yPos, { align: 'center' });
 
@@ -972,8 +1132,139 @@
         }
     </script>
     <script>
+        /* ══════════════════════════════════════════════
+           DATE RANGE PICKER  –  state & helpers
+        ══════════════════════════════════════════════ */
+        let _fpFrom = null;   // flatpickr instance – From
+        let _fpTo   = null;   // flatpickr instance – To
+        let _activeQuick = null;
+
+        function openDateRangePicker() {
+            document.getElementById('dateModalOverlay').classList.add('active');
+
+            // Init flatpickr once
+            if (!_fpFrom) {
+                _fpFrom = flatpickr('#dmFromDate', {
+                    dateFormat: 'd/m/Y',
+                    maxDate: 'today',
+                    onChange: () => { _activeQuick = null; _clearQuickActive(); _updateRangeLabel(); }
+                });
+            }
+            if (!_fpTo) {
+                _fpTo = flatpickr('#dmToDate', {
+                    dateFormat: 'd/m/Y',
+                    maxDate: 'today',
+                    onChange: () => { _activeQuick = null; _clearQuickActive(); _updateRangeLabel(); }
+                });
+            }
+        }
+
+        function closeDateModal() {
+            document.getElementById('dateModalOverlay').classList.remove('active');
+        }
+
+        function _clearQuickActive() {
+            ['qToday','qLast7','qLast30','qAllTime'].forEach(id => {
+                document.getElementById(id).classList.remove('active');
+            });
+        }
+
+        function applyQuick(preset) {
+            _clearQuickActive();
+            _activeQuick = preset;
+            const now  = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            let from, to;
+            if (preset === 'today') {
+                from = to = today;
+                document.getElementById('qToday').classList.add('active');
+            } else if (preset === 'last7') {
+                from = new Date(today); from.setDate(from.getDate() - 6);
+                to   = today;
+                document.getElementById('qLast7').classList.add('active');
+            } else if (preset === 'last30') {
+                from = new Date(today); from.setDate(from.getDate() - 29);
+                to   = today;
+                document.getElementById('qLast30').classList.add('active');
+            } else { // all
+                from = new Date(2020, 0, 1);
+                to   = today;
+                document.getElementById('qAllTime').classList.add('active');
+            }
+
+            _fpFrom.setDate(from, true);
+            _fpTo.setDate(to, true);
+            _updateRangeLabel();
+        }
+
+        function _formatDisplay(d) {
+            if (!d) return '';
+            const day   = String(d.getDate()).padStart(2,'0');
+            const month = d.toLocaleString('en-GB', { month: 'short' });
+            return `${day} ${month} ${d.getFullYear()}`;
+        }
+
+        function _updateRangeLabel() {
+            const from = _fpFrom && _fpFrom.selectedDates[0];
+            const to   = _fpTo   && _fpTo.selectedDates[0];
+            const lbl  = document.getElementById('dmRangeLabel');
+            if (from && to) {
+                lbl.textContent = `📆 ${_formatDisplay(from)}  →  ${_formatDisplay(to)}`;
+            } else if (from) {
+                lbl.textContent = `📆 From ${_formatDisplay(from)}  (select end date)`;
+            } else {
+                lbl.textContent = 'No date range selected';
+            }
+        }
+
+        function _toDateOnly(d) {
+            // Returns a plain YYYY-MM-DD comparable string
+            const date = d instanceof Date ? d : (d && d.toDate ? d.toDate() : new Date(d));
+            return date.toISOString().slice(0, 10);
+        }
+
+        async function runExport() {
+            const from = _fpFrom && _fpFrom.selectedDates[0];
+            const to   = _fpTo   && _fpTo.selectedDates[0];
+
+            if (!from && !to) {
+                alert('Please select at least a From Date to export.');
+                return;
+            }
+
+            // Normalise to midnight for fair comparison
+            const fromStr = from ? _toDateOnly(from) : null;
+            // If only one date picked, treat as a single-day filter
+            const toStr   = to   ? _toDateOnly(to)   : fromStr;
+
+            // Filter using createdAt or updatedAt
+            const source = filteredDocuments.length > 0 ? filteredDocuments : allDocuments;
+            const rangeFiltered = source.filter(doc => {
+                const ts = doc.createdAt || doc.updatedAt;
+                if (!ts) return false;
+                const docStr = _toDateOnly(ts);
+                return docStr >= fromStr && docStr <= toStr;
+            });
+
+            if (rangeFiltered.length === 0) {
+                alert(`No records found for the selected date range:\n${_formatDisplay(from)} – ${_formatDisplay(to || from)}`);
+                return;
+            }
+
+            // Update export button label
+            document.getElementById('exportBtn').textContent =
+                `📅 Export (${_formatDisplay(from)} – ${_formatDisplay(to || from)})`;
+
+            closeDateModal();
+            await exportToExcel(rangeFiltered);
+        }
+
+        /* ══════════════════════════════════════════════
+           EXCEL EXPORT (accepts optional data array)
+        ══════════════════════════════════════════════ */
         // Export to Excel with structured block grouping (UI match)
-        async function exportToExcel() {
+        async function exportToExcel(docsToExport) {
             try {
                 // Check if ExcelJS is loaded
                 if (typeof ExcelJS === 'undefined') {
@@ -984,7 +1275,7 @@
                 // Show loading
                 document.getElementById('loadingOverlay').classList.add('active');
 
-                const documentsToExport = filteredDocuments.length > 0 ? filteredDocuments : allDocuments;
+                const documentsToExport = docsToExport || (filteredDocuments.length > 0 ? filteredDocuments : allDocuments);
                 if (documentsToExport.length === 0) {
                     alert('No documents to export');
                     document.getElementById('loadingOverlay').classList.remove('active');
@@ -1134,6 +1425,11 @@
             }
         }
 
+
+        // Close date modal when clicking outside
+        document.getElementById('dateModalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeDateModal();
+        });
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
