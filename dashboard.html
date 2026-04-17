@@ -277,7 +277,7 @@
             background: #ffffff;
             border-radius: 16px;
             padding: 36px 32px 28px;
-            width: 460px;
+            width: 520px;
             max-width: 95vw;
             box-shadow: 0 24px 64px rgba(0,0,0,0.28);
             animation: dmSlideIn 0.22s ease;
@@ -348,6 +348,43 @@
         }
         .dm-field input:focus { outline: none; border-color: #667eea; background: #fff; }
 
+        /* Category pills inside export modal */
+        .dm-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+        }
+        .dm-cat-btns {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .dm-cat-btn {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1.5px solid #667eea;
+            border-radius: 8px;
+            background: transparent;
+            color: #667eea;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s;
+            text-align: center;
+        }
+        .dm-cat-btn:hover { background: #eef0fc; }
+        .dm-cat-btn.active {
+            background: #667eea;
+            color: #fff;
+        }
+        .dm-divider {
+            border: none;
+            border-top: 1px solid #ebebeb;
+            margin: 4px 0 18px;
+        }
         .dm-range-label {
             text-align: center;
             font-size: 13px;
@@ -536,12 +573,14 @@
         <div class="loading-text">Exporting to Excel...</div>
     </div>
 
-    <!-- Date Range Picker Modal -->
+    <!-- Date Range + Category Export Modal -->
     <div id="dateModalOverlay" class="date-modal-overlay">
         <div class="date-modal">
-            <h2>📅 Export Date Range</h2>
-            <p class="dm-subtitle">Select a date range to filter records before exporting.</p>
+            <h2>📊 Export to Excel</h2>
+            <p class="dm-subtitle">Filter by date range and category before exporting.</p>
 
+            <!-- Date quick presets -->
+            <p class="dm-section-label">📅 Date Range</p>
             <div class="dm-quick-btns">
                 <button class="dm-quick-btn" id="qToday"   onclick="applyQuick('today')">Today</button>
                 <button class="dm-quick-btn" id="qLast7"   onclick="applyQuick('last7')">Last 7 Days</button>
@@ -549,6 +588,7 @@
                 <button class="dm-quick-btn" id="qAllTime" onclick="applyQuick('all')">All Time</button>
             </div>
 
+            <!-- From / To pickers -->
             <div class="dm-fields">
                 <div class="dm-field">
                     <label>From Date</label>
@@ -560,6 +600,17 @@
                 </div>
             </div>
 
+            <hr class="dm-divider">
+
+            <!-- Category filter -->
+            <p class="dm-section-label">🏷️ Category</p>
+            <div class="dm-cat-btns">
+                <button class="dm-cat-btn active" id="catAll" onclick="selectCategory('All')">All</button>
+                <button class="dm-cat-btn" id="catRM"  onclick="selectCategory('Raw Material')">Raw Material (RM)</button>
+                <button class="dm-cat-btn" id="catFG"  onclick="selectCategory('Finish Goods')">Finish Goods (FG)</button>
+            </div>
+
+            <!-- Live filter summary -->
             <div class="dm-range-label" id="dmRangeLabel">No date range selected</div>
 
             <div class="dm-actions">
@@ -1135,9 +1186,10 @@
         /* ══════════════════════════════════════════════
            DATE RANGE PICKER  –  state & helpers
         ══════════════════════════════════════════════ */
-        let _fpFrom = null;   // flatpickr instance – From
-        let _fpTo   = null;   // flatpickr instance – To
-        let _activeQuick = null;
+        let _fpFrom = null;          // flatpickr instance – From
+        let _fpTo   = null;          // flatpickr instance – To
+        let _activeQuick    = null;
+        let _selectedCategory = 'All'; // default: no category filter
 
         function openDateRangePicker() {
             document.getElementById('dateModalOverlay').classList.add('active');
@@ -1157,6 +1209,8 @@
                     onChange: () => { _activeQuick = null; _clearQuickActive(); _updateRangeLabel(); }
                 });
             }
+            // Reset category to default each time modal opens
+            selectCategory('All');
         }
 
         function closeDateModal() {
@@ -1205,16 +1259,32 @@
             return `${day} ${month} ${d.getFullYear()}`;
         }
 
+        /* ── Category selector ── */
+        function selectCategory(cat) {
+            _selectedCategory = cat;
+            ['catAll','catRM','catFG'].forEach(id =>
+                document.getElementById(id).classList.remove('active')
+            );
+            const map = { 'All': 'catAll', 'Raw Material': 'catRM', 'Finish Goods': 'catFG' };
+            if (map[cat]) document.getElementById(map[cat]).classList.add('active');
+            _updateRangeLabel();
+        }
+
         function _updateRangeLabel() {
             const from = _fpFrom && _fpFrom.selectedDates[0];
             const to   = _fpTo   && _fpTo.selectedDates[0];
             const lbl  = document.getElementById('dmRangeLabel');
+
+            const catLabel = _selectedCategory === 'All' ? 'All Categories'
+                           : _selectedCategory === 'Raw Material' ? 'Raw Material (RM)'
+                           : 'Finish Goods (FG)';
+
             if (from && to) {
-                lbl.textContent = `📆 ${_formatDisplay(from)}  →  ${_formatDisplay(to)}`;
+                lbl.textContent = `📆 ${_formatDisplay(from)} → ${_formatDisplay(to)}  |  🏷️ ${catLabel}`;
             } else if (from) {
-                lbl.textContent = `📆 From ${_formatDisplay(from)}  (select end date)`;
+                lbl.textContent = `📆 From ${_formatDisplay(from)} (select end date)  |  🏷️ ${catLabel}`;
             } else {
-                lbl.textContent = 'No date range selected';
+                lbl.textContent = `🏷️ ${catLabel}  —  No date range selected`;
             }
         }
 
@@ -1233,31 +1303,46 @@
                 return;
             }
 
-            // Normalise to midnight for fair comparison
+            // Normalise to YYYY-MM-DD strings for comparison
             const fromStr = from ? _toDateOnly(from) : null;
-            // If only one date picked, treat as a single-day filter
-            const toStr   = to   ? _toDateOnly(to)   : fromStr;
+            const toStr   = to   ? _toDateOnly(to)   : fromStr; // single-day if only From is set
 
-            // Filter using createdAt or updatedAt
-            const source = filteredDocuments.length > 0 ? filteredDocuments : allDocuments;
-            const rangeFiltered = source.filter(doc => {
+            // Apply BOTH date AND category filters
+            const source = allDocuments; // always start from full set
+            const filtered = source.filter(doc => {
+                // ── Date filter ──
                 const ts = doc.createdAt || doc.updatedAt;
                 if (!ts) return false;
                 const docStr = _toDateOnly(ts);
-                return docStr >= fromStr && docStr <= toStr;
+                const matchDate = docStr >= fromStr && docStr <= toStr;
+
+                // ── Category filter ──
+                const matchCategory =
+                    _selectedCategory === 'All' ||
+                    doc.category === _selectedCategory;
+
+                return matchDate && matchCategory;
             });
 
-            if (rangeFiltered.length === 0) {
-                alert(`No records found for the selected date range:\n${_formatDisplay(from)} – ${_formatDisplay(to || from)}`);
+            if (filtered.length === 0) {
+                const catLabel = _selectedCategory === 'All' ? 'All Categories' : _selectedCategory;
+                alert(
+                    `No records found for the selected filters:\n` +
+                    `📅 ${_formatDisplay(from)} – ${_formatDisplay(to || from)}\n` +
+                    `🏷️ ${catLabel}`
+                );
                 return;
             }
 
-            // Update export button label
+            // Build a descriptive label for the header button
+            const catShort = _selectedCategory === 'All'       ? 'All'
+                           : _selectedCategory === 'Raw Material' ? 'RM'
+                           : 'FG';
             document.getElementById('exportBtn').textContent =
-                `📅 Export (${_formatDisplay(from)} – ${_formatDisplay(to || from)})`;
+                `📅 Export: ${catShort} | ${_formatDisplay(from)} – ${_formatDisplay(to || from)}`;
 
             closeDateModal();
-            await exportToExcel(rangeFiltered);
+            await exportToExcel(filtered);
         }
 
         /* ══════════════════════════════════════════════
