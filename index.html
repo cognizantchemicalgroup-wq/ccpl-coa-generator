@@ -661,6 +661,11 @@
         <input type="date" id="expiryDate" readonly style="background: #f0f0f0;">
       </div>
 
+      <div class="input-group">
+        <label for="casNo">CAS No.:</label>
+        <input type="text" id="casNo" placeholder="Enter CAS number (e.g., 67-64-1)">
+      </div>
+
       <div id="productCodeError" style="color: red; margin-top: 10px; display: none;">Please select a valid
         product</div>
 
@@ -704,6 +709,10 @@
         <div class="info-row">
           <div class="info-label">Expiry Date:</div>
           <div class="info-value" id="displayExpiryDate">-</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">CAS No.:</div>
+          <div class="info-value" id="displayCasNo">-</div>
         </div>
       </div>
 
@@ -2439,6 +2448,7 @@
       const batchNo = document.getElementById('batchNo').value;
       const mfgDate = document.getElementById('mfgDate').value;
       const expiryDate = document.getElementById('expiryDate').value;
+      const casNo = document.getElementById('casNo').value;
 
       if (!currentProductData || !batchNo || !mfgDate || !expiryDate) {
         alert('Please fill in all required fields');
@@ -2452,6 +2462,7 @@
       document.getElementById('displayBatchNo').textContent = batchNo;
       document.getElementById('displayMfgDate').textContent = formatDate(mfgDate);
       document.getElementById('displayExpiryDate').textContent = formatDate(expiryDate);
+      document.getElementById('displayCasNo').textContent = casNo || currentProductData.cas || 'N/A';
 
       // Hide product code row for Raw Material tests
       const productCodeRow = document.getElementById('productCodeRow');
@@ -2465,6 +2476,19 @@
       generateTestTable();
 
       goToPage(3);
+
+      // Fill test results if in edit mode
+      if (window.editTestResults) {
+        setTimeout(() => {
+          window.editTestResults.forEach((testResult, index) => {
+            const input = document.getElementById('result_' + index);
+            if (input && testResult.result) {
+              input.value = testResult.result;
+              input.dispatchEvent(new Event('input'));
+            }
+          });
+        }, 500);
+      }
     }
 
     function formatDate(dateString) {
@@ -2702,19 +2726,7 @@
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
       function addWatermark() {
-        if (!logo) return;
-        try {
-          const w = doc.internal.pageSize.getWidth();
-          const h = doc.internal.pageSize.getHeight();
-          const watermarkState = doc.GState({ opacity: 0.1 });
-          doc.saveGraphicsState();
-          doc.setGState(watermarkState);
-          const imgProps = doc.getImageProperties(logo);
-          const wmWidth = w * 0.7;
-          const wmHeight = (imgProps.height * wmWidth) / imgProps.width;
-          doc.addImage(logo, imgProps.fileType, (w - wmWidth) / 2, (h - wmHeight) / 2, wmWidth, wmHeight);
-          doc.restoreGraphicsState();
-        } catch (e) { }
+        // Watermark removed as per requirements
       }
 
       let pageNumber = 1;
@@ -2727,44 +2739,91 @@
       }
 
       function drawHeader() {
-        addWatermark();
+        // First row: Product Name left, Logo right
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(79, 70, 229); // Indigo
+        const rawProductName = currentProductData.productName || currentProductData.name || 'COA Report';
+        const productNameText = rawProductName.split('-')[0].trim().toUpperCase();
+        doc.text(productNameText, 15, 15);
+
+        // Logo on right
         if (logo) {
           try {
             const imgProps = doc.getImageProperties(logo);
-            doc.addImage(logo, imgProps.fileType, 160, 5, 30, 20);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const logoWidth = 35;
+            const logoHeight = 23;
+            const margin = 10;
+            const logoX = pageWidth - logoWidth - margin;
+            doc.addImage(logo, imgProps.fileType, logoX, 5, logoWidth, logoHeight);
           } catch (e) { }
         }
 
-        doc.setFontSize(18);
-        doc.setFont(undefined, 'bold');
-        doc.setTextColor(79, 70, 229); // Indigo
-
-        const rawProductName = currentProductData.productName || currentProductData.name || 'COA Report';
-        const productNameText = rawProductName.split('-')[0].trim().toUpperCase();
-        doc.setFontSize(14);
-        const productNameLines = doc.splitTextToSize(productNameText, 140);
-        doc.text(productNameLines, 15, 15);
-
-        let headerYPos = 15 + (productNameLines.length * 6);
+        // Certificate of Analysis below product name
         doc.setFontSize(12);
         doc.setFont(undefined, 'bold');
-        doc.setTextColor(110, 110, 110);
-        doc.text('Certificate of Analysis', 15, headerYPos);
-
-        doc.setLineWidth(0.5);
-        doc.setDrawColor(102, 126, 234);
-        doc.line(15, 28, 195, 28);
-        doc.setDrawColor(0, 0, 0);
-        doc.setLineWidth(0.1);
         doc.setTextColor(0, 0, 0);
+        doc.text('Certificate of Analysis', 15, 25);
+
+        // Black line below header
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(0, 0, 0);
+        doc.line(15, 35, 195, 35);
+
+        // Product details section
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(0, 0, 0);
+        let detailsY = 45;
+
+        // Product Code
+        doc.text('Product Code :', 15, detailsY);
+        doc.setFont(undefined, 'normal');
+        doc.text(currentProductData.code, 80, detailsY);
+        detailsY += 6;
+
+        // Batch No
+        doc.setFont(undefined, 'bold');
+        doc.text('Batch No. :', 15, detailsY);
+        doc.setFont(undefined, 'normal');
+        doc.text(document.getElementById('displayBatchNo').textContent, 80, detailsY);
+        detailsY += 6;
+
+        // CAS No
+        doc.setFont(undefined, 'bold');
+        doc.text('CAS No. :', 15, detailsY);
+        doc.setFont(undefined, 'normal');
+        const casValue = document.getElementById('casNo').value || currentProductData.cas || 'N/A';
+        doc.text(casValue, 80, detailsY);
+        detailsY += 6;
+
+        // Manufacturing Date
+        doc.setFont(undefined, 'bold');
+        doc.text('Manufacturing Date :', 15, detailsY);
+        doc.setFont(undefined, 'normal');
+        doc.text(document.getElementById('displayMfgDate').textContent, 80, detailsY);
+        detailsY += 6;
+
+        // Expiry Date
+        doc.setFont(undefined, 'bold');
+        doc.text('Expiry Date :', 15, detailsY);
+        doc.setFont(undefined, 'normal');
+        doc.text(document.getElementById('displayExpiryDate').textContent, 80, detailsY);
+
+        const headerBottom = detailsY + 4;
+        doc.setTextColor(0, 0, 0);
+        doc.setLineWidth(0.1);
+
+        return headerBottom;
       }  // end drawHeader()
 
       // Draw header on first page
-      drawHeader();
+      const headerBottom = drawHeader();
 
       // Calculate total pages (simple estimate based on 255mm height)
       let totalPages = 1;
-      let testY = 48 + (currentTestType !== 'raw-material' ? 6 : 0) + 25; // Header + Product Info + Table Header
+      let testY = headerBottom + 25; // Header + Table Header
       currentProductData.tests.forEach((test, idx) => {
         const testLines = doc.splitTextToSize(test.test, 56);
         const specLines = doc.splitTextToSize(test.specification, 78);
@@ -2777,64 +2836,17 @@
         const h = (test.type === 'header' ? 9 : (maxL * 4.5 + 2));
         if (testY + h > 255) {
           totalPages++;
-          testY = 48 + h;
+          testY = headerBottom + h;
         } else {
           testY += h;
         }
       });
       if (testY > 235) totalPages++; // space for signatures
 
-
-
-
-      // Certificate of Analysis title
-      doc.setFontSize(14);
-      doc.setFont(undefined, 'bold');
-      doc.text('Certificate of Analysis', 15, 38);
-
-      // Product information section
+      // Test results table header
       doc.setFontSize(10);
       doc.setFont(undefined, 'normal');
-      let yPos = 48;
-
-      // Only show Product Code for Finish Goods
-      if (currentTestType !== 'raw-material') {
-        doc.setFont(undefined, 'bold');
-        doc.text('Product Code:', 15, yPos);
-        doc.setFont(undefined, 'normal');
-        doc.text(currentProductData.code, 65, yPos);
-        yPos += 6;
-      }
-
-      doc.setFont(undefined, 'bold');
-      doc.text('Product Name:', 15, yPos);
-      doc.setFont(undefined, 'normal');
-      const rawProdName = currentProductData.productName || currentProductData.name || '';
-      const productNameText = rawProdName.split('-')[0].trim();
-      const productNameLines = doc.splitTextToSize(productNameText, 125);
-      doc.text(productNameLines, 65, yPos);
-      yPos += productNameLines.length * 5 + 1;
-
-      doc.setFont(undefined, 'bold');
-      doc.text('Batch No.:', 15, yPos);
-      doc.setFont(undefined, 'normal');
-      doc.text(document.getElementById('displayBatchNo').textContent, 65, yPos);
-      yPos += 6;
-
-      doc.setFont(undefined, 'bold');
-      doc.text('Manufacturing Date:', 15, yPos);
-      doc.setFont(undefined, 'normal');
-      doc.text(document.getElementById('displayMfgDate').textContent, 65, yPos);
-      yPos += 6;
-
-      doc.setFont(undefined, 'bold');
-      doc.text('Expiry Date:', 15, yPos);
-      doc.setFont(undefined, 'normal');
-      doc.text(document.getElementById('displayExpiryDate').textContent, 65, yPos);
-      yPos += 6;
-
-      // Test results table header
-      yPos += 8;
+      let yPos = headerBottom + 4;
       doc.setFillColor(240, 240, 240);
       doc.rect(15, yPos - 5, 180, 8, 'F');
 
@@ -2859,9 +2871,9 @@
           addPageNumber(pageNumber, totalPages);
           doc.addPage();
           addWatermark();
-          drawHeader();
+          const headerBottom = drawHeader();
           pageNumber++;
-          yPos = 48;
+          yPos = headerBottom + 10;
 
           // Redraw table header on new page
           doc.setFillColor(240, 240, 240);
@@ -2933,15 +2945,27 @@
         yPos += rowHeight;
       });
 
+      // Remarks section
+      yPos += 10;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.setTextColor(0, 0, 0);
+      doc.text('Remarks :', 15, yPos);
+      doc.setFont(undefined, 'normal');
+      const remarksText = 'The above material meets the specification as per USP / NF / BP / EP / IP / Inhouse.';
+      const remarksLines = doc.splitTextToSize(remarksText, 170);
+      doc.text(remarksLines, 40, yPos);
+      yPos += remarksLines.length * 5 + 5;
+
       // Footer section
       // Footer section
       if (yPos > 230) {
         addPageNumber(pageNumber, totalPages);
         doc.addPage();
         addWatermark();
-        drawHeader();
+        const headerBottom = drawHeader();
         pageNumber++;
-        yPos = 48;
+        yPos = headerBottom + 10;
       }
 
       // Signature Section
@@ -2949,10 +2973,10 @@
       doc.setLineWidth(0.2);
       doc.setDrawColor(200, 200, 200);
 
-      // Analyzed By (Left)
+      // Compiled By (Left)
       doc.setFontSize(10);
       doc.setFont(undefined, 'bold');
-      doc.text('Analyzed By', 15, yPos);
+      doc.text('Compiled By', 15, yPos);
       yPos += 15;
       doc.line(15, yPos, 70, yPos);
       yPos += 5;
@@ -3061,6 +3085,7 @@
         const batchNo = document.getElementById('batchNo').value;
         const mfgDate = document.getElementById('mfgDate').value;
         const expiryDate = document.getElementById('expiryDate').value;
+        const casNo = document.getElementById('casNo').value;
 
         // Collect test results
         const testResults = [];
@@ -3100,6 +3125,7 @@
           batchNo: batchNo,
           mfgDate: mfgDate,
           expiryDate: expiryDate,
+          casNo: casNo,
           testType: currentTestType,
           productData: currentProductData,
           testResults: testResults,
@@ -3229,6 +3255,9 @@
           return;
         }
 
+        // Store test results for edit mode
+        window.editTestResults = data.testResults;
+
         currentDocumentId = docId;
 
         // Set test type
@@ -3262,6 +3291,7 @@
             document.getElementById('batchNo').value = data.batchNo;
             document.getElementById('mfgDate').value = data.mfgDate;
             document.getElementById('expiryDate').value = data.expiryDate;
+            document.getElementById('casNo').value = data.casNo || '';
 
             // Proceed to data entry
             proceedToDataEntry();
@@ -3338,16 +3368,28 @@
     window.saveAndDownload = saveAndDownload;
     window.saveToFirebase = saveToFirebase;
 
+    // Load logo as base64 for PDF generation
+    function loadLogo() {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        const logoData = canvas.toDataURL('image/png');
+        localStorage.setItem('ccpl_logo', logoData);
+      };
+      img.src = '1.png';
+    }
+
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
       checkAuth();
       loadProductData();
       checkEditMode();
-
-      // Share logo with other pages
-      if (typeof logo !== 'undefined' && logo) {
-        localStorage.setItem('ccpl_logo', logo);
-      }
+      loadLogo(); // Load logo for PDF generation
     });
   </script>
 </body>

@@ -977,24 +977,7 @@
 
             // Watermark setup
             function addWatermark() {
-                if (!logo) return;
-                try {
-                    const w = doc.internal.pageSize.getWidth();
-                    const h = doc.internal.pageSize.getHeight();
-
-                    const watermarkState = doc.GState({ opacity: 0.1 }); // 0.1 Opacity as requested
-                    doc.saveGraphicsState();
-                    doc.setGState(watermarkState);
-
-                    const imgProps = doc.getImageProperties(logo);
-                    const wmWidth = w * 0.7; // 70% width
-                    const wmHeight = (imgProps.height * wmWidth) / imgProps.width;
-
-                    doc.addImage(logo, imgProps.fileType, (w - wmWidth) / 2, (h - wmHeight) / 2, wmWidth, wmHeight);
-                    doc.restoreGraphicsState();
-                } catch (e) {
-                    console.warn('Watermark error:', e);
-                }
+                // Watermark removed as per requirements
             }
 
             let pageNumber = 1;
@@ -1009,61 +992,90 @@
             }
 
             function drawHeader() {
-                // Background watermark
-                addWatermark();
+                // First row: Product Name left, Logo right
+                doc.setFontSize(14);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(79, 70, 229); // Indigo
+                const rawProductName = data.productName || data.chemicalName || 'COA Report';
+                const productNameText = rawProductName.split('-')[0].trim().toUpperCase();
+                doc.text(productNameText, 15, 15);
 
+                // Logo on right
                 if (logo) {
                     try {
                         const imgProps = doc.getImageProperties(logo);
-                        doc.addImage(logo, imgProps.fileType, 160, 5, 30, 20);
+                        const pageWidth = doc.internal.pageSize.getWidth();
+                        const logoWidth = 35;
+                        const logoHeight = 23;
+                        const margin = 10;
+                        const logoX = pageWidth - logoWidth - margin;
+                        doc.addImage(logo, imgProps.fileType, logoX, 5, logoWidth, logoHeight);
                     } catch (e) { }
                 }
 
-                doc.setFontSize(18);
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(79, 70, 229); // Indigo
-
-                doc.setFontSize(14);
-                const rawProductName = data.productName || data.chemicalName || 'COA Report';
-                const productNameLines = doc.splitTextToSize(rawProductName.split('-')[0].trim().toUpperCase(), 140);
-                doc.text(productNameLines, 15, 15);
-
-                let headerYPos = 15 + (productNameLines.length * 6);
+                // Certificate of Analysis below product name
                 doc.setFontSize(12);
                 doc.setFont(undefined, 'bold');
-                doc.setTextColor(100, 100, 100);
-                doc.text('Certificate of Analysis', 15, headerYPos);
-
-                doc.setDrawColor(102, 126, 234);
-                doc.setLineWidth(0.5);
-                doc.line(15, 28, 195, 28);
-                doc.setDrawColor(0, 0, 0);
-                doc.setLineWidth(0.1);
                 doc.setTextColor(0, 0, 0);
+                doc.text('Certificate of Analysis', 15, 25);
+
+                // Black line below header
+                doc.setLineWidth(0.5);
+                doc.setDrawColor(0, 0, 0);
+                doc.line(15, 35, 195, 35);
+
+                // Product details section
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                let detailsY = 45;
+
+                // Product Code
+                doc.text('Product Code :', 15, detailsY);
+                doc.setFont(undefined, 'normal');
+                doc.text(data.productCode || 'N/A', 80, detailsY);
+                detailsY += 6;
+
+                // Batch No
+                doc.setFont(undefined, 'bold');
+                doc.text('Batch No. :', 15, detailsY);
+                doc.setFont(undefined, 'normal');
+                doc.text(data.batchNo || 'N/A', 80, detailsY);
+                detailsY += 6;
+
+                // CAS No
+                doc.setFont(undefined, 'bold');
+                doc.text('CAS No. :', 15, detailsY);
+                doc.setFont(undefined, 'normal');
+                doc.text(data.casNo || 'N/A', 80, detailsY);
+                detailsY += 6;
+
+                // Manufacturing Date
+                doc.setFont(undefined, 'bold');
+                doc.text('Manufacturing Date :', 15, detailsY);
+                doc.setFont(undefined, 'normal');
+                doc.text(formatDateForPDF(data.mfgDate), 80, detailsY);
+                detailsY += 6;
+
+                // Expiry Date
+                doc.setFont(undefined, 'bold');
+                doc.text('Expiry Date :', 15, detailsY);
+                doc.setFont(undefined, 'normal');
+                doc.text(formatDateForPDF(data.expiryDate), 80, detailsY);
+
+                const headerBottom = detailsY + 4;
+                doc.setTextColor(0, 0, 0);
+                doc.setLineWidth(0.1);
+
+                return headerBottom;
             }
 
-            drawHeader();
+            const headerBottom = drawHeader();
 
-            let yPos = 38;
+            let yPos = headerBottom + 4;
             doc.setFontSize(10);
 
-            const info = [
-                { l: 'Product Name:', v: (data.productName || data.chemicalName || '').split('-')[0].trim() },
-                { l: 'Batch No.:', v: data.batchNo || 'N/A' },
-                { l: 'Manufacturing Date:', v: formatDateForPDF(data.mfgDate) },
-                { l: 'Expiry Date:', v: formatDateForPDF(data.expiryDate) }
-            ];
-
-            info.forEach(item => {
-                doc.setFont(undefined, 'bold');
-                doc.text(item.l, 15, yPos);
-                doc.setFont(undefined, 'normal');
-                const textLines = doc.splitTextToSize(item.v, 130);
-                doc.text(textLines, 60, yPos);
-                yPos += (textLines.length * 5) + 2;
-            });
-
-            yPos += 5;
+            // Test results table header
             doc.setFillColor(245, 247, 250);
             doc.rect(15, yPos - 5, 180, 9, 'F');
             doc.setFont(undefined, 'bold');
@@ -1079,9 +1091,9 @@
                 if (yPos > 245) {
                     addPageNumber(pageNumber);
                     doc.addPage();
-                    drawHeader();
+                    const headerBottom = drawHeader();
                     pageNumber++;
-                    yPos = 50;
+                    yPos = headerBottom + 4;
 
                     doc.setFillColor(245, 247, 250);
                     doc.rect(15, yPos - 5, 180, 9, 'F');
@@ -1090,7 +1102,7 @@
                     doc.text('Specification', 75, yPos + 1);
                     doc.text('Result', 158, yPos + 1);
                     doc.line(15, yPos + 4, 195, yPos + 4);
-                    yPos += 12;
+                    yPos += 10;
                 }
 
                 if (test.type === 'header') {
@@ -1125,18 +1137,30 @@
                 testIndex++;
             });
 
+            // Remarks section
+            yPos += 10;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text('Remarks :', 15, yPos);
+            doc.setFont(undefined, 'normal');
+            const remarksText = 'The above material meets the specification as per USP / NF / BP / EP / IP / Inhouse.';
+            const remarksLines = doc.splitTextToSize(remarksText, 170);
+            doc.text(remarksLines, 40, yPos);
+            yPos += remarksLines.length * 5 + 5;
+
             // Final Signature section
             if (yPos > 210) {
                 addPageNumber(pageNumber);
                 doc.addPage();
-                drawHeader();
+                const headerBottom = drawHeader();
                 pageNumber++;
-                yPos = 50;
+                yPos = headerBottom + 10;
             } else { yPos += 20; }
 
             doc.setFontSize(10);
             doc.setFont(undefined, 'bold');
-            doc.text('Analyzed By', 20, yPos);
+            doc.text('Compiled By', 20, yPos);
             doc.text('Approved By', 150, yPos);
             yPos += 25;
             doc.line(20, yPos, 75, yPos);
@@ -1149,7 +1173,7 @@
 
             yPos += 8;
             doc.setFont(undefined, 'bold');
-            doc.text('Cognizant Chemical Pvt. Ltd. | Quality Control Department', 105, yPos, { align: 'center' });
+            doc.text('Cognizant Chemical Pvt. Ltd.', 105, yPos, { align: 'center' });
 
             addPageNumber(pageNumber);
             return doc.output('blob');
@@ -1289,9 +1313,12 @@
         }
 
         function _toDateOnly(d) {
-            // Returns a plain YYYY-MM-DD comparable string
+            // Returns a plain YYYY-MM-DD comparable string in local timezone
             const date = d instanceof Date ? d : (d && d.toDate ? d.toDate() : new Date(d));
-            return date.toISOString().slice(0, 10);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         async function runExport() {
@@ -1431,6 +1458,7 @@
                             'Name',
                             'Select Chemical:',
                             'Batch No.:',
+                            'CAS No.:',
                             'Manufacturing Date:',
                             'Expiry Date (Auto-calculated):',
                             'Description',
@@ -1452,6 +1480,7 @@
                                 `${batch.category || 'Unknown'} Test`,
                                 batch.productName || batch.chemicalName || '',
                                 batch.batchNo || '',
+                                batch.casNo || '',
                                 formatDateForPDF(batch.mfgDate),
                                 formatDateForPDF(batch.expiryDate),
                                 '' // Description Placeholder
@@ -1491,8 +1520,9 @@
                     else if (index === 1) column.width = 15; // Name
                     else if (index === 2) column.width = 25; // Select Chemical
                     else if (index === 3) column.width = 10; // Batch No
-                    else if (index === 4 || index === 5) column.width = 12; // Dates
-                    else if (index === 6) column.width = 30; // Description
+                    else if (index === 4) column.width = 10; // CAS No
+                    else if (index === 5 || index === 6) column.width = 12; // Dates
+                    else if (index === 7) column.width = 30; // Description
                     else column.width = 18; // Test columns
                 });
 

@@ -4,6 +4,7 @@
       "code": "RM2506001",
       "name": "Methanol (Methyl Alcohol)",
       "chemicalName": "Methanol (CH3OH)",
+      "cas": "67-56-1",
       "category": "raw-material",
       "tests": [
         {
