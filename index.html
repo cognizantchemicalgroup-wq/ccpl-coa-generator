@@ -2388,20 +2388,29 @@
       }
     }
 
-    // Load product data directly from embedded JSON
-    function loadProductData() {
+    // Load product data from JSON files (with cache busting)
+    async function loadProductData() {
       try {
-        console.log('Loading product data...');
-
-        // Load RM products directly from embedded data
-        rmProducts = rmProductsData.products;
+        console.log('Loading product data from JSON files...');
+        
+        // Use cache busting to ensure fresh data
+        const cacheBuster = '?t=' + Date.now();
+        
+        // Fetch RM products from JSON file
+        const rmResponse = await fetch('./data/rm-products.json' + cacheBuster);
+        if (!rmResponse.ok) throw new Error('Failed to load RM products');
+        const rmData = await rmResponse.json();
+        rmProducts = rmData.products || [];
         console.log('✓ RM Products loaded:', rmProducts.length);
 
-        // Load FG products directly from embedded data
-        fgProducts = fgProductsData.products;
+        // Fetch FG products from JSON file
+        const fgResponse = await fetch('./data/fg-products.json' + cacheBuster);
+        if (!fgResponse.ok) throw new Error('Failed to load FG products');
+        const fgData = await fgResponse.json();
+        fgProducts = fgData.products || [];
         console.log('✓ FG Products loaded:', fgProducts.length);
 
-        console.log('✓ All products loaded successfully!');
+        console.log('✓ All products loaded successfully from JSON files!');
         console.log('  - RM Products:', rmProducts.map(p => p.code).join(', '));
         console.log('  - FG Products:', fgProducts.map(p => p.code).join(', '));
 
@@ -2409,8 +2418,20 @@
         document.getElementById('loadingMessage').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
       } catch (error) {
-        console.error('✗ Error loading product data:', error);
-        alert('Error loading product data: ' + error.message);
+        console.error('✗ Error loading product data from JSON, falling back to embedded data:', error);
+        
+        // Fallback to embedded data if JSON fetch fails
+        try {
+          rmProducts = rmProductsData.products;
+          fgProducts = fgProductsData.products;
+          console.log('✓ Using embedded product data as fallback');
+          
+          document.getElementById('loadingMessage').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+        } catch (fallbackError) {
+          console.error('✗ Even fallback failed:', fallbackError);
+          alert('Error loading product data: ' + error.message);
+        }
       }
     }
 
@@ -2841,8 +2862,8 @@
           return;
         }
 
-        // Create dropdown for compliance type, input for others
-        if (test.type === 'compliance') {
+        // Create dropdown for dropdown type, input for others
+        if (test.type === 'dropdown') {
           const select = document.createElement('select');
           select.id = 'result_' + index;
           select.dataset.testIndex = index;
@@ -2859,15 +2880,14 @@
           defaultOption.selected = true;
           select.appendChild(defaultOption);
 
-          const compliesOption = document.createElement('option');
-          compliesOption.value = 'Complies';
-          compliesOption.textContent = 'Complies';
-          select.appendChild(compliesOption);
-
-          const passesTestOption = document.createElement('option');
-          passesTestOption.value = 'Passes test';
-          passesTestOption.textContent = 'Passes test';
-          select.appendChild(passesTestOption);
+          // Use options from test data or default to Complies/Passes
+          const options = test.options || ['Complies', 'Passes'];
+          options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            select.appendChild(option);
+          });
 
           select.addEventListener('change', validateResult);
           cellResult.appendChild(select);
